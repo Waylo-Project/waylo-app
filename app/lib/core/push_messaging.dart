@@ -85,9 +85,21 @@ class PushMessaging {
       if (!_wired) {
         _wired = true;
         messaging.onTokenRefresh.listen(_save);
+        // Re-save on a language switch so pushes follow it right away, not only
+        // after the next launch.
+        LocaleController.instance.addListener(_resave);
       }
     } catch (e) {
       debugPrint('[push] register failed: $e');
+    }
+  }
+
+  Future<void> _resave() async {
+    try {
+      final token = await FirebaseMessaging.instance.getToken();
+      if (token != null) await _save(token);
+    } catch (e) {
+      debugPrint('[push] token resave failed: $e');
     }
   }
 

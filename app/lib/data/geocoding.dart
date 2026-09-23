@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
 import '../config/app_config.dart';
@@ -8,16 +7,12 @@ import '../core/lat_lng.dart';
 import '../core/locale_controller.dart';
 
 /// The Mapbox geocoding `language` for the active UI language, so place /
-/// country names match what the rest of the app shows. Mirrors how MaterialApp
-/// resolves the locale (see main.dart): an explicit choice (Settings →
-/// Language) wins, else the device language, falling back to English — the only
-/// other locale waylo ships.
+/// country names match what the rest of the app shows. Chinese is requested as
+/// `zh-Hans`: the app's Chinese strings are Simplified, while a bare `zh` makes
+/// Mapbox return Traditional place names.
 String _geoLanguage() {
-  final override = LocaleController.instance.value?.languageCode;
-  if (override == 'ko' || override == 'en') return override!;
-  final device =
-      WidgetsBinding.instance.platformDispatcher.locale.languageCode;
-  return device == 'ko' ? 'ko' : 'en';
+  final code = LocaleController.instance.resolvedLanguageCode;
+  return code == 'zh' ? 'zh-Hans' : code;
 }
 
 /// A short place name (city/locality) for a location, for the photo sheet

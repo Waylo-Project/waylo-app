@@ -72,25 +72,38 @@ async function importKey(pem: string): Promise<CryptoKey> {
 }
 
 // ---- localized message templates ------------------------------------------
-// Each returns [title, body] for the recipient's language ("ko" or "en", with
-// English as the fallback). `n` is the actor's username.
+// Each returns [title, body] for the recipient's language — one entry per app
+// locale (en / ko / ja / zh / es), English as the fallback. `n` is the actor's
+// username.
 type Tmpl = (n: string) => [string, string];
 const MESSAGES: Record<string, Record<string, Tmpl>> = {
   friend_request: {
     ko: (n) => ["새 친구 요청", `${n}님이 친구 요청을 보냈어요`],
     en: (n) => ["New friend request", `${n} sent you a friend request`],
+    ja: (n) => ["新しい友だちリクエスト", `${n}さんから友だちリクエストが届きました`],
+    zh: (n) => ["新的好友请求", `${n} 向你发送了好友请求`],
+    es: (n) => ["Nueva solicitud de amistad", `${n} te ha enviado una solicitud de amistad`],
   },
   friend_accepted: {
     ko: (n) => ["친구 요청 수락", `${n}님이 친구 요청을 수락했어요`],
     en: (n) => ["Friend request accepted", `${n} accepted your friend request`],
+    ja: (n) => ["友だちリクエストが承認されました", `${n}さんが友だちリクエストを承認しました`],
+    zh: (n) => ["好友请求已接受", `${n} 接受了你的好友请求`],
+    es: (n) => ["Solicitud de amistad aceptada", `${n} ha aceptado tu solicitud de amistad`],
   },
   like: {
     ko: (n) => ["새 좋아요", `${n}님이 회원님의 사진을 좋아합니다`],
     en: (n) => ["New like", `${n} liked your photo`],
+    ja: (n) => ["新しいいいね", `${n}さんがあなたの写真にいいねしました`],
+    zh: (n) => ["新的赞", `${n} 赞了你的照片`],
+    es: (n) => ["Nuevo me gusta", `A ${n} le ha gustado tu foto`],
   },
   comment: {
     ko: (n) => ["새 댓글", `${n}님이 댓글을 남겼어요`],
     en: (n) => ["New comment", `${n} commented on your photo`],
+    ja: (n) => ["新しいコメント", `${n}さんがあなたの写真にコメントしました`],
+    zh: (n) => ["新评论", `${n} 评论了你的照片`],
+    es: (n) => ["Nuevo comentario", `${n} ha comentado tu foto`],
   },
 };
 

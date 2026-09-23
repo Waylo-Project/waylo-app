@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../l10n/app_localizations.dart';
+
 /// App-wide language selection, persisted across launches.
 ///
 /// `value == null` means "follow the device locale" (the default); a non-null
@@ -21,14 +23,19 @@ class LocaleController extends ValueNotifier<Locale?> {
   }
 
   /// The active UI language code as the app resolves it: an explicit choice,
-  /// else the device language, falling back to English (the only other shipped
-  /// locale). For non-widget callers (push registration) that need a plain code.
+  /// else the first device language the app ships, else English — the same
+  /// outcome as MaterialApp's locale resolution. For non-widget callers
+  /// (geocoding, push registration) that need a plain code.
   String get resolvedLanguageCode {
-    final override = value?.languageCode;
-    if (override == 'ko' || override == 'en') return override!;
-    final device =
-        WidgetsBinding.instance.platformDispatcher.locale.languageCode;
-    return device == 'ko' ? 'ko' : 'en';
+    final shipped = {
+      for (final l in AppLocalizations.supportedLocales) l.languageCode,
+    };
+    final chosen = value?.languageCode;
+    if (chosen != null && shipped.contains(chosen)) return chosen;
+    for (final device in WidgetsBinding.instance.platformDispatcher.locales) {
+      if (shipped.contains(device.languageCode)) return device.languageCode;
+    }
+    return 'en';
   }
 
   /// Set (or clear, with null = follow device) the language and persist it.
