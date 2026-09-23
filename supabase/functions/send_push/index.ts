@@ -6,14 +6,18 @@
 //
 // Secrets (set as Edge Function secrets, NEVER committed):
 //   FCM_SERVICE_ACCOUNT  - the Firebase service-account JSON (whole file)
+//   WEBHOOK_SECRET       - shared secret; each Database Webhook sends it in an
+//                          `x-webhook-secret` header
 //   SUPABASE_URL         - provided automatically
 //   SUPABASE_SERVICE_ROLE_KEY - provided automatically
-// The webhook must send  Authorization: Bearer <service_role_key>  so random
-// callers can't spam notifications (the function runs with verify_jwt = false).
+// The function runs with verify_jwt = false and Supabase manages the
+// Authorization header on webhooks, so the custom header is what keeps random
+// callers from sending notifications. Requests without it are rejected.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SERVICE_ACCOUNT = JSON.parse(Deno.env.get("FCM_SERVICE_ACCOUNT")!);
+const WEBHOOK_SECRET = Deno.env.get("WEBHOOK_SECRET");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
@@ -184,10 +188,10 @@ async function postOwner(postId: string): Promise<string | null> {
 
 // ---- webhook entry --------------------------------------------------------
 Deno.serve(async (req) => {
-  // NOTE: auth check temporarily removed — Supabase manages the Authorization
-  // header on Edge Function webhooks, which collided with our service-role
-  // check (401). Re-secure later with a custom header (e.g. x-webhook-secret)
-  // that Supabase doesn't touch. The function runs with verify_jwt = false.
+  // Fail closed: an unset secret rejects everything rather than opening up.
+  if (!WEBHOOK_SECRET || req.headers.get("x-webhook-secret") !== WEBHOOK_SECRET) {
+    return new Response("unauthorized", { status: 401 });
+  }
 
   try {
     const { type, table, record: rec, old_record: old } = await req.json();

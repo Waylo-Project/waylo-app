@@ -262,7 +262,10 @@ sending lives in a Supabase Edge Function triggered by DB events.
       never in the app or repo (same rule as `service_role`).
 - [ ] DB triggers / webhooks on `friend_requests`, `friendships`, `post_likes`,
       `post_comments` → call `send_push` (never notify the actor about their own
-      action).
+      action). Each webhook sends an `x-webhook-secret` header equal to the
+      `WEBHOOK_SECRET` function secret; without it `send_push` returns 401.
+      (Configured in the dashboard, not a migration — the secret can't be
+      committed.)
 
 ---
 
