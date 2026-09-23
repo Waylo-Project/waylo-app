@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/error_dialog.dart';
@@ -34,6 +35,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // Mutable copy so edits reflect immediately.
   late Profile? _profile = widget.profile;
+
+  // "1.0.0 (1)" — the built app's version + build number (from pubspec);
+  // null until read.
+  String? _version;
+
+  @override
+  void initState() {
+    super.initState();
+    PackageInfo.fromPlatform().then((info) {
+      if (mounted) {
+        setState(() => _version = '${info.version} (${info.buildNumber})');
+      }
+    });
+  }
 
   String get _username => _profile?.username ?? 'you';
 
@@ -169,7 +184,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _SettingsRow(
               icon: Icons.info_outline,
               label: l.settingsVersion,
-              value: '1.0.0 (42)',
+              value: _version,
               trailing: _Trailing.none,
             ),
             _SettingsRow(
