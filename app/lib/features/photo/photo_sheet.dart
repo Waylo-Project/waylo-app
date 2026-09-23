@@ -444,6 +444,7 @@ class _PhotoCardState extends State<_PhotoCard>
           initialLocation: _location,
           takenAt: _detail?.takenAt,
           initialCaption: _detail?.caption,
+          initialPlaceLabel: _detail?.placeLabel,
         ),
       ),
     );
@@ -455,6 +456,7 @@ class _PhotoCardState extends State<_PhotoCard>
         caption: result.caption,
         takenAt: result.takenAt,
         avatarUrl: _detail?.avatarUrl,
+        placeLabel: result.placeLabel,
       );
       // Clear the derived place/flag; re-geocode the new location below.
       _place = null;
@@ -527,7 +529,10 @@ class _PhotoCardState extends State<_PhotoCard>
               ],
               Expanded(
                 child: Text(
-                  _place ?? AppLocalizations.of(context).photoSomewhere,
+                  // The poster's own name wins over the geocoded one.
+                  _detail?.placeLabel ??
+                      _place ??
+                      AppLocalizations.of(context).photoSomewhere,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,

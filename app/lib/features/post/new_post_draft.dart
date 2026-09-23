@@ -28,8 +28,8 @@ class NewPostDraft {
   /// Optional caption for the post.
   final String caption;
 
-  /// Human-readable place label (e.g. "Pike Place, Seattle"), editable by the
-  /// user. Persisted once the `place_label` column ships (see docs/POST.md).
+  /// A place name the user wrote (e.g. "Grandma's café"). Null when they kept
+  /// the auto-filled name, which viewers then see geocoded in their language.
   final String? placeLabel;
 
   NewPostDraft copyWith({LatLng? location, String? caption, String? placeLabel}) {

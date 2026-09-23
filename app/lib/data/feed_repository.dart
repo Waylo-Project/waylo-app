@@ -56,14 +56,22 @@ class FlagPoint {
   }
 }
 
-/// Details for the photo sheet: who posted, caption, when, and their avatar.
+/// Details for the photo sheet: who posted, caption, when, their avatar, and
+/// the place name they wrote (null = use the geocoded name).
 class PostDetail {
-  const PostDetail({this.username, this.caption, this.takenAt, this.avatarUrl});
+  const PostDetail({
+    this.username,
+    this.caption,
+    this.takenAt,
+    this.avatarUrl,
+    this.placeLabel,
+  });
 
   final String? username;
   final String? caption;
   final DateTime? takenAt;
   final String? avatarUrl;
+  final String? placeLabel;
 }
 
 /// A recent (last-24h) friend post for the merged "Recent" map + "Just in"
@@ -229,7 +237,8 @@ class FeedRepository {
         .from('posts')
         // Disambiguate the embed: post_likes/post_comments also link posts to
         // profiles (many-to-many), so name the author FK explicitly.
-        .select('caption, taken_at, profiles!posts_user_id_fkey(username, avatar_path)')
+        .select(
+            'caption, taken_at, place_label, profiles!posts_user_id_fkey(username, avatar_path)')
         .eq('id', postId)
         .maybeSingle();
     if (row == null) return const PostDetail();
@@ -243,6 +252,7 @@ class FeedRepository {
       avatarUrl: avatarPath == null
           ? null
           : _client.storage.from('avatars').getPublicUrl(avatarPath),
+      placeLabel: row['place_label'] as String?,
     );
   }
 
@@ -381,15 +391,17 @@ class FeedRepository {
     ];
   }
 
-  /// Edit a post the caller owns: location, caption, date, and country code, in
-  /// one atomic `update_post` RPC (owner check + server-built geography). An
-  /// empty caption is stored as null.
+  /// Edit a post the caller owns: location, caption, date, country code, and
+  /// place label, in one atomic `update_post` RPC (owner check + server-built
+  /// geography). An empty caption is stored as null; a null [placeLabel] means
+  /// "use the geocoded name".
   Future<void> updatePost({
     required String postId,
     required LatLng location,
     required String? caption,
     required DateTime? takenAt,
     required String? countryCode,
+    required String? placeLabel,
   }) async {
     await _client.rpc('update_post', params: {
       'p_post_id': postId,
@@ -398,6 +410,7 @@ class FeedRepository {
       'p_caption': (caption == null || caption.isEmpty) ? null : caption,
       'p_taken_at': takenAt?.toIso8601String(),
       'p_country_code': countryCode,
+      'p_place_label': placeLabel,
     });
   }
 

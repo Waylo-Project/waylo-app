@@ -71,6 +71,7 @@ class PostRepository {
       'p_taken_at': draft.takenAt?.toIso8601String(),
       'p_image_paths': [path],
       'p_country_code': countryCode,
+      'p_place_label': draft.placeLabel,
     });
     return postId as String;
   }

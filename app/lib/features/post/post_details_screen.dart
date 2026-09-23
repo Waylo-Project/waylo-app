@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
 import '../../core/date_format.dart';
@@ -23,11 +24,13 @@ class EditPostResult {
     required this.location,
     required this.takenAt,
     required this.caption,
+    required this.placeLabel,
   });
 
   final core.LatLng location;
   final DateTime? takenAt;
   final String? caption;
+  final String? placeLabel;
 }
 
 /// Step 2 of posting (per `docs/POST.md` + the design handoff, screen 2):
@@ -43,7 +46,8 @@ class PostDetailsScreen extends StatefulWidget {
     this.takenAt,
   })  : editPostId = null,
         photoImage = null,
-        initialCaption = null;
+        initialCaption = null,
+        initialPlaceLabel = null;
 
   /// Edit an existing post: the same map / date / caption UI, but seeded from
   /// the post and saving via [FeedRepository.updatePost] (returning an
@@ -55,6 +59,7 @@ class PostDetailsScreen extends StatefulWidget {
     required this.initialLocation,
     this.takenAt,
     this.initialCaption,
+    this.initialPlaceLabel,
   })  : photo = null,
         source = null;
 
@@ -77,6 +82,10 @@ class PostDetailsScreen extends StatefulWidget {
 
   /// Prefill for the caption field in edit mode.
   final String? initialCaption;
+
+  /// The post's saved (user-written) place name in edit mode; null if it uses
+  /// the auto-filled one.
+  final String? initialPlaceLabel;
 
   @override
   State<PostDetailsScreen> createState() => _PostDetailsScreenState();
@@ -108,6 +117,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
   final _lngCtl = TextEditingController();
   final _searchCtl = TextEditingController();
 
+  // True once the place field holds a name the user wrote. Only that is saved;
+  // the auto-filled name is left null so viewers geocode it in their language.
   bool _placeEdited = false;
   bool _coordsOpen = false;
   bool _searching = false;
@@ -119,6 +130,10 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
   void initState() {
     super.initState();
     if (widget.initialCaption != null) _captionCtl.text = widget.initialCaption!;
+    if (widget.initialPlaceLabel != null) {
+      _placeCtl.text = widget.initialPlaceLabel!;
+      _placeEdited = true;
+    }
     _syncCoordFields();
     _reverseGeocode();
   }
@@ -250,9 +265,15 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
         location: _center,
         takenAt: _date,
         caption: _captionCtl.text.trim(),
-        placeLabel: _placeCtl.text.trim().isEmpty ? null : _placeCtl.text.trim(),
+        placeLabel: _customPlaceLabel,
       ),
     );
+  }
+
+  /// The place name to save: the user's own text, or null for the auto name.
+  String? get _customPlaceLabel {
+    final text = _placeCtl.text.trim();
+    return _placeEdited && text.isNotEmpty ? text : null;
   }
 
   /// Edit mode: recompute the country code, persist via the RPC, and return the
@@ -261,6 +282,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
     if (_saving) return;
     setState(() => _saving = true);
     final caption = _captionCtl.text.trim();
+    final placeLabel = _customPlaceLabel;
     try {
       final country = await reverseCountryCode(_center);
       await _feed.updatePost(
@@ -269,12 +291,14 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
         caption: caption,
         takenAt: _date,
         countryCode: country,
+        placeLabel: placeLabel,
       );
       if (!mounted) return;
       Navigator.of(context).pop(EditPostResult(
         location: _center,
         takenAt: _date,
         caption: caption.isEmpty ? null : caption,
+        placeLabel: placeLabel,
       ));
     } catch (e) {
       if (!mounted) return;
@@ -547,7 +571,10 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                 const SizedBox(height: 2),
                 TextField(
                   controller: _placeCtl,
-                  onChanged: (_) => _placeEdited = true,
+                  // Clearing the field hands it back to the auto name.
+                  onChanged: (v) => _placeEdited = v.trim().isNotEmpty,
+                  // Matches the posts.place_label length check.
+                  inputFormatters: [LengthLimitingTextInputFormatter(100)],
                   decoration: InputDecoration(
                     isDense: true,
                     border: InputBorder.none,

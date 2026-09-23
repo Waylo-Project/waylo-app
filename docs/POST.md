@@ -79,9 +79,11 @@ map markers.
 - **Search (forward geocoding)**: add a forward lookup to `data/geocoding.dart`
   (Mapbox Geocoding API; the public `pk…` token already ships). `geocoding.dart`
   currently only does reverse (country/place) + country center.
-- **Place name**: needs a `place_label` (or similar) column on `posts` + a new
-  `create_post` param + migration under `supabase/migrations/`. Today only
-  `country_code` is stored.
+- **Place name**: `posts.place_label` (migration `place_label`), passed via
+  `create_post` / `update_post`. Only a name the user **edited** is stored; the
+  auto-filled one stays null so each viewer sees it geocoded in their own
+  language. The photo sheet shows `place_label` when set, else the geocoded
+  name.
 - **Date / lat-lng / caption**: no schema change — `taken_at`, location, and
   caption already flow through `create_post`; this is UI only.
 
