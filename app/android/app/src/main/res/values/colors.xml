@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Accent tint for the status-bar notification icon (brand sky blue,
+         matching AppColors.primary). -->
+    <color name="waylo_notification">#97DCF1</color>
+</resources>

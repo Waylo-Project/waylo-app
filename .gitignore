@@ -1,0 +1,5 @@
+# Per-machine Claude Code permissions (may hold local test commands / ids).
+.claude/settings.local.json
+
+# Kotlin compiler session / crash files.
+app/android/.kotlin/

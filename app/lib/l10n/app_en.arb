@@ -1,0 +1,871 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "waylo",
+  "@appTitle": {
+    "description": "The application name, shown as the MaterialApp title."
+  },
+
+  "commonNext": "Next",
+  "@commonNext": {
+    "description": "Generic 'Next' button advancing to the next step."
+  },
+  "commonRetry": "Retry",
+  "@commonRetry": {
+    "description": "Generic 'Retry' button after a recoverable error."
+  },
+  "commonCancel": "Cancel",
+  "@commonCancel": {
+    "description": "Generic 'Cancel' button."
+  },
+  "commonDelete": "Delete",
+  "@commonDelete": {
+    "description": "Generic 'Delete' confirmation button."
+  },
+  "commonSave": "Save",
+  "@commonSave": {
+    "description": "Generic 'Save' button."
+  },
+  "commonGotIt": "Got it",
+  "@commonGotIt": {
+    "description": "Generic acknowledgement button that dismisses an info sheet."
+  },
+  "commonSomethingWrong": "Something went wrong. Try again.",
+  "@commonSomethingWrong": {
+    "description": "Generic fallback error message for an unexpected failure."
+  },
+
+  "welcomeTagline": "Share your places\nwith friends",
+  "@welcomeTagline": {
+    "description": "Tagline on the signed-out welcome screen. The \\n is a line break."
+  },
+  "welcomeSignUp": "Sign up for free",
+  "@welcomeSignUp": {
+    "description": "Primary button on the welcome screen that starts sign-up."
+  },
+
+  "authLogIn": "Log in",
+  "@authLogIn": {
+    "description": "Log in: used as the welcome link, the sign-in app bar title, and the sign-in button."
+  },
+  "authEmailLabel": "Email",
+  "@authEmailLabel": {
+    "description": "Field label for the email input on the sign-in screen."
+  },
+  "authPasswordLabel": "Password",
+  "@authPasswordLabel": {
+    "description": "Field label for the password input on the sign-in screen."
+  },
+  "authInvalidEmail": "Enter a valid email",
+  "@authInvalidEmail": {
+    "description": "Validation error when the email is missing or malformed."
+  },
+  "authEnterPassword": "Enter your password",
+  "@authEnterPassword": {
+    "description": "Validation error when the password field is empty."
+  },
+
+  "signUpCreateAccount": "Create account",
+  "@signUpCreateAccount": {
+    "description": "App bar title shared by every sign-up step."
+  },
+  "signUpEmailQuestion": "What's your email?",
+  "@signUpEmailQuestion": {
+    "description": "Prompt on the sign-up email step."
+  },
+  "signUpPasswordQuestion": "Create a password",
+  "@signUpPasswordQuestion": {
+    "description": "Prompt on the sign-up password step."
+  },
+  "signUpPasswordRequirements": "• At least 10 characters\n• Must include letters and numbers",
+  "@signUpPasswordRequirements": {
+    "description": "Password rules shown under the password field. Each \\n is a line break."
+  },
+  "signUpBirthDateQuestion": "What's your date of birth?",
+  "@signUpBirthDateQuestion": {
+    "description": "Prompt on the sign-up date-of-birth step."
+  },
+  "signUpBirthDateHint": "YYYY-MM-DD",
+  "@signUpBirthDateHint": {
+    "description": "Placeholder showing the expected date format. Keep the literal Y/M/D pattern."
+  },
+  "signUpAgeRestriction": "You must be at least {minAge} to sign up.",
+  "@signUpAgeRestriction": {
+    "description": "Inline error on the date-of-birth step when the entered age is below the minimum sign-up age.",
+    "placeholders": {
+      "minAge": { "type": "int" }
+    }
+  },
+  "signUpGenderQuestion": "What's your gender?",
+  "@signUpGenderQuestion": {
+    "description": "Prompt on the sign-up gender step."
+  },
+  "signUpGenderSelect": "Select your gender",
+  "@signUpGenderSelect": {
+    "description": "Placeholder text in the gender dropdown before a choice is made."
+  },
+  "genderMale": "Male",
+  "@genderMale": {
+    "description": "Gender option label. The stored value stays canonical English; this is display only."
+  },
+  "genderFemale": "Female",
+  "@genderFemale": {
+    "description": "Gender option label (display only)."
+  },
+  "genderNonBinary": "Non-binary",
+  "@genderNonBinary": {
+    "description": "Gender option label (display only)."
+  },
+  "genderOther": "Other",
+  "@genderOther": {
+    "description": "Gender option label (display only)."
+  },
+  "genderPreferNotToSay": "Prefer not to say",
+  "@genderPreferNotToSay": {
+    "description": "Gender option label (display only)."
+  },
+  "signUpUsernameQuestion": "What's your username?",
+  "@signUpUsernameQuestion": {
+    "description": "Prompt on the sign-up username step."
+  },
+  "signUpUsernameRequirements": "• 1-30 characters\n• Can contain letters, numbers, '.' and '_'\n• Cannot start or end with '.' or '_'\nNo consecutive '..' (double periods)",
+  "@signUpUsernameRequirements": {
+    "description": "Username rules shown under the username field. Each \\n is a line break."
+  },
+  "signUpConfirmEmailNotice": "Check your email to confirm your account, then log in.",
+  "@signUpConfirmEmailNotice": {
+    "description": "Shown when sign-up succeeds but the session needs email confirmation."
+  },
+  "signUpUsernameTaken": "That username is already taken.",
+  "@signUpUsernameTaken": {
+    "description": "Error when the chosen username already exists (sign-up and settings)."
+  },
+
+  "profileLoadError": "Could not load your profile.",
+  "@profileLoadError": {
+    "description": "Shown by the auth gate when the signed-in user's profile fails to load."
+  },
+
+  "settingsTitle": "Settings",
+  "@settingsTitle": {
+    "description": "Settings screen app bar title."
+  },
+  "settingsSectionProfile": "Profile",
+  "@settingsSectionProfile": {
+    "description": "Section header above the profile rows."
+  },
+  "settingsSectionAccount": "Account",
+  "@settingsSectionAccount": {
+    "description": "Section header above the account rows."
+  },
+  "settingsSectionPreferences": "Preferences",
+  "@settingsSectionPreferences": {
+    "description": "Section header above the preferences rows."
+  },
+  "settingsSectionAbout": "About",
+  "@settingsSectionAbout": {
+    "description": "Section header above the about rows."
+  },
+  "settingsUsername": "Username",
+  "@settingsUsername": {
+    "description": "Row label and edit dialog title for the username."
+  },
+  "settingsDisplayName": "Display name",
+  "@settingsDisplayName": {
+    "description": "Row label and edit dialog title for the display name."
+  },
+  "settingsEmail": "Email",
+  "@settingsEmail": {
+    "description": "Row label and edit dialog title for the email."
+  },
+  "settingsPassword": "Password",
+  "@settingsPassword": {
+    "description": "Row label for the password."
+  },
+  "settingsChange": "Change",
+  "@settingsChange": {
+    "description": "Value shown on the password row, hinting it opens a change dialog."
+  },
+  "settingsLanguage": "Language",
+  "@settingsLanguage": {
+    "description": "Row label for the app language."
+  },
+  "settingsAppearance": "Appearance",
+  "@settingsAppearance": {
+    "description": "Row label and sheet title for the light/dark theme setting."
+  },
+  "settingsThemeSystem": "System default",
+  "@settingsThemeSystem": {
+    "description": "Theme option that follows the device's light/dark setting."
+  },
+  "settingsThemeLight": "Light",
+  "@settingsThemeLight": {
+    "description": "Theme option: always light."
+  },
+  "settingsThemeDark": "Dark",
+  "@settingsThemeDark": {
+    "description": "Theme option: always dark."
+  },
+  "settingsPhotoVisibility": "Photo visibility",
+  "@settingsPhotoVisibility": {
+    "description": "Row label and sheet title for the photo-visibility setting."
+  },
+  "settingsFriendsOnly": "Friends only",
+  "@settingsFriendsOnly": {
+    "description": "The fixed photo-visibility value: friends only."
+  },
+  "settingsVersion": "Version",
+  "@settingsVersion": {
+    "description": "Row label for the app version."
+  },
+  "settingsTermsOfService": "Terms of Service",
+  "@settingsTermsOfService": {
+    "description": "Row label linking to the Terms of Service."
+  },
+  "settingsPrivacyPolicy": "Privacy Policy",
+  "@settingsPrivacyPolicy": {
+    "description": "Row label linking to the Privacy Policy."
+  },
+  "settingsEdit": "Edit",
+  "@settingsEdit": {
+    "description": "Edit pill on the profile hero card."
+  },
+  "settingsDeleteAccount": "Delete account",
+  "@settingsDeleteAccount": {
+    "description": "Label on the delete-account card."
+  },
+  "settingsSignedInAs": "Signed in as @{username}",
+  "@settingsSignedInAs": {
+    "description": "Footer showing which account is signed in.",
+    "placeholders": {
+      "username": { "type": "String" }
+    }
+  },
+  "settingsProfilePhoto": "Profile photo",
+  "@settingsProfilePhoto": {
+    "description": "Title of the profile-photo action sheet."
+  },
+  "settingsTakePhoto": "Take a photo",
+  "@settingsTakePhoto": {
+    "description": "Profile-photo sheet action: open the camera."
+  },
+  "settingsChooseFromGallery": "Choose from gallery",
+  "@settingsChooseFromGallery": {
+    "description": "Profile-photo sheet action: pick from the gallery."
+  },
+  "settingsRemovePhoto": "Remove photo",
+  "@settingsRemovePhoto": {
+    "description": "Profile-photo sheet action: remove the current avatar."
+  },
+  "settingsAppLanguage": "App language",
+  "@settingsAppLanguage": {
+    "description": "Title of the language picker sheet."
+  },
+  "settingsLanguageSystem": "System default",
+  "@settingsLanguageSystem": {
+    "description": "Language option that follows the device's language setting."
+  },
+  "settingsLanguageNote": "More languages are on the way. Choosing a language updates the whole app.",
+  "@settingsLanguageNote": {
+    "description": "Helper text under the language options."
+  },
+  "settingsVisibilityFriendsDesc": "Your photos are visible to your friends, and only on your own map.",
+  "@settingsVisibilityFriendsDesc": {
+    "description": "Explanation of the friends-only visibility rule."
+  },
+  "settingsVisibilityFixedNote": "This is fixed for now — it keeps waylo simple and your photos private to people you trust.",
+  "@settingsVisibilityFixedNote": {
+    "description": "Note that the visibility rule cannot currently be changed."
+  },
+  "settingsDeleteTitle": "Delete account?",
+  "@settingsDeleteTitle": {
+    "description": "Title of the delete-account confirmation dialog."
+  },
+  "settingsDeleteBody": "This permanently removes your account, photos, and friendships. This can’t be undone.",
+  "@settingsDeleteBody": {
+    "description": "Body of the delete-account confirmation dialog."
+  },
+  "settingsCouldNotDeleteAccount": "Could not delete account: {error}",
+  "@settingsCouldNotDeleteAccount": {
+    "description": "Error dialog when deleting the account fails.",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "settingsUsernameHint": "username",
+  "@settingsUsernameHint": {
+    "description": "Placeholder in the username edit field."
+  },
+  "settingsEnterUsername": "Enter a username.",
+  "@settingsEnterUsername": {
+    "description": "Inline error when the username edit field is empty."
+  },
+  "settingsCouldNotUpdateUsername": "Could not update username: {error}",
+  "@settingsCouldNotUpdateUsername": {
+    "description": "Snackbar when updating the username fails. {error} is the raw error.",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "settingsDisplayNameHint": "Your name",
+  "@settingsDisplayNameHint": {
+    "description": "Placeholder in the display-name edit field."
+  },
+  "settingsCouldNotUpdateDisplayName": "Could not update display name: {error}",
+  "@settingsCouldNotUpdateDisplayName": {
+    "description": "Snackbar when updating the display name fails.",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "settingsEmailHint": "you@email.com",
+  "@settingsEmailHint": {
+    "description": "Placeholder in the email edit field."
+  },
+  "settingsCouldNotUpdateEmail": "Could not update email: {error}",
+  "@settingsCouldNotUpdateEmail": {
+    "description": "Snackbar when updating the email fails.",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "settingsEmailChangeSent": "We sent a confirmation link to {email}. Your email changes once you tap it.",
+  "@settingsEmailChangeSent": {
+    "description": "Notice after requesting an email change: it takes effect only once the confirmation link sent to the new address is clicked.",
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "settingsNewPassword": "New password",
+  "@settingsNewPassword": {
+    "description": "Title of the new-password edit dialog."
+  },
+  "settingsPasswordHint": "At least 10 characters, with letters and numbers",
+  "@settingsPasswordHint": {
+    "description": "Placeholder in the new-password edit field."
+  },
+  "settingsPasswordTooShort": "Password must be at least 10 characters and include letters and numbers.",
+  "@settingsPasswordTooShort": {
+    "description": "Inline error when the new password does not meet the policy."
+  },
+  "settingsCouldNotUpdatePassword": "Could not update password: {error}",
+  "@settingsCouldNotUpdatePassword": {
+    "description": "Snackbar when updating the password fails.",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "settingsCouldNotUpdatePhoto": "Could not update photo: {error}",
+  "@settingsCouldNotUpdatePhoto": {
+    "description": "Snackbar when updating the avatar fails.",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "settingsCouldNotRemovePhoto": "Could not remove photo: {error}",
+  "@settingsCouldNotRemovePhoto": {
+    "description": "Snackbar when removing the avatar fails.",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+
+  "avatarNewProfilePhoto": "New profile photo",
+  "@avatarNewProfilePhoto": {
+    "description": "Title bar of the avatar picker screen."
+  },
+  "avatarPhotoAccessOff": "Photo access is off.\nAllow access to choose a photo, or take a new one.",
+  "@avatarPhotoAccessOff": {
+    "description": "Shown in the avatar picker grid when photo permission is denied."
+  },
+  "avatarOpenSettings": "Open settings",
+  "@avatarOpenSettings": {
+    "description": "Button to open the OS settings to grant photo access."
+  },
+  "avatarCouldNotCrop": "Could not crop the photo: {error}",
+  "@avatarCouldNotCrop": {
+    "description": "Snackbar when capturing the cropped avatar fails.",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+
+  "friendsSegRecent": "Recent",
+  "@friendsSegRecent": {
+    "description": "Segmented-control tab: the recent (last 24h) map."
+  },
+  "friendsSegFriends": "Friends",
+  "@friendsSegFriends": {
+    "description": "Segmented-control tab: the friends list. Also used as the 'already a friend' status label in search results."
+  },
+  "friendsSegRequests": "Requests",
+  "@friendsSegRequests": {
+    "description": "Segmented-control tab: incoming friend requests."
+  },
+  "friendsFailed": "Failed: {error}",
+  "@friendsFailed": {
+    "description": "Generic failure snackbar on the friends screen.",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "friendsRequestSent": "Request sent",
+  "@friendsRequestSent": {
+    "description": "Snackbar confirming a friend request was sent."
+  },
+  "friendsEmptyFriends": "No friends yet.\nTap the search icon to find people.",
+  "@friendsEmptyFriends": {
+    "description": "Empty state for the friends list."
+  },
+  "friendsCountHeader": "{count, plural, =1{1 friend} other{{count} friends}}",
+  "@friendsCountHeader": {
+    "description": "Section header above the friends list, showing the count.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "friendsRemoveTitle": "Remove @{username}?",
+  "@friendsRemoveTitle": {
+    "description": "Title of the remove-friend confirmation dialog.",
+    "placeholders": {
+      "username": { "type": "String" }
+    }
+  },
+  "friendsRemoveBody": "You'll stop seeing each other's maps.",
+  "@friendsRemoveBody": {
+    "description": "Body of the remove-friend confirmation dialog."
+  },
+  "friendsRemove": "Remove",
+  "@friendsRemove": {
+    "description": "Remove action: dialog button and the swipe-to-remove background label."
+  },
+  "friendsRemoved": "Removed @{username}",
+  "@friendsRemoved": {
+    "description": "Snackbar confirming a friend was removed.",
+    "placeholders": {
+      "username": { "type": "String" }
+    }
+  },
+  "friendsEmptyRequests": "No pending requests.",
+  "@friendsEmptyRequests": {
+    "description": "Empty state for the requests list."
+  },
+  "friendsRequestsHeader": "Wants to be friends",
+  "@friendsRequestsHeader": {
+    "description": "Section header above the incoming requests."
+  },
+  "friendsAccept": "Accept",
+  "@friendsAccept": {
+    "description": "Button to accept an incoming friend request."
+  },
+  "friendsDecline": "Decline",
+  "@friendsDecline": {
+    "description": "Button to decline an incoming friend request."
+  },
+  "friendsAdded": "Added @{username}",
+  "@friendsAdded": {
+    "description": "Snackbar confirming a request was accepted.",
+    "placeholders": {
+      "username": { "type": "String" }
+    }
+  },
+  "friendsDeclined": "Declined",
+  "@friendsDeclined": {
+    "description": "Snackbar confirming a request was declined."
+  },
+  "friendsMutual": "{count} mutual",
+  "@friendsMutual": {
+    "description": "Count of mutual friends shown on a request card.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "friendsSearchFailed": "Search failed: {error}",
+  "@friendsSearchFailed": {
+    "description": "Snackbar when the username search fails.",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "friendsStatusSent": "Sent",
+  "@friendsStatusSent": {
+    "description": "Status label on a search result whose request was already sent."
+  },
+  "friendsAdd": "Add",
+  "@friendsAdd": {
+    "description": "Button on a search result to send a friend request."
+  },
+  "friendsSearchHint": "Search username",
+  "@friendsSearchHint": {
+    "description": "Placeholder in the find-friends search field."
+  },
+  "friendsNoOneFound": "No one found.\nTry a different username.",
+  "@friendsNoOneFound": {
+    "description": "Shown when a username search returns no results."
+  },
+  "friendsSearchPrompt": "Search a username to add friends.",
+  "@friendsSearchPrompt": {
+    "description": "Shown before any search has been made."
+  },
+  "friendsNoPlaces": "No places yet",
+  "@friendsNoPlaces": {
+    "description": "Passport strip text when a friend has posted no places."
+  },
+  "friendsCountries": "{count, plural, =1{1 country} other{{count} countries}}",
+  "@friendsCountries": {
+    "description": "Passport strip summary of how many countries a friend has posted from.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "friendsCountriesMore": "+{count} countries",
+  "@friendsCountriesMore": {
+    "description": "Passport strip summary when there are more than three countries.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "friendsFindTitle": "Find friends",
+  "@friendsFindTitle": {
+    "description": "App bar title of the find-friends screen."
+  },
+  "friendsJustIn": "JUST IN",
+  "@friendsJustIn": {
+    "description": "Header of the recent-posts strip on the Recent panel."
+  },
+  "recentLast24h": "Last 24h",
+  "@recentLast24h": {
+    "description": "Leading label of the recent-map summary pill."
+  },
+  "recentPostsCount": "{count, plural, =1{1 post} other{{count} posts}}",
+  "@recentPostsCount": {
+    "description": "Post count in the recent-map summary pill.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "recentFriendsCount": "{count, plural, =1{1 friend} other{{count} friends}}",
+  "@recentFriendsCount": {
+    "description": "Friend count in the recent-map summary pill.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeNow": "now",
+  "@timeNow": {
+    "description": "Relative time for something that just happened."
+  },
+  "timeMinutesShort": "{count}m",
+  "@timeMinutesShort": {
+    "description": "Compact relative time in minutes.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeHoursShort": "{count}h",
+  "@timeHoursShort": {
+    "description": "Compact relative time in hours.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeDaysShort": "{count}d",
+  "@timeDaysShort": {
+    "description": "Compact relative time in days.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "commonBack": "Back",
+  "@commonBack": {
+    "description": "Generic 'Back' button."
+  },
+  "postNewPost": "New post",
+  "@postNewPost": {
+    "description": "Title of the photo picker / first post step."
+  },
+  "postPickPhoto": "Pick a photo",
+  "@postPickPhoto": {
+    "description": "Placeholder shown in the crop stage before a photo is chosen."
+  },
+  "postRecents": "Recents",
+  "@postRecents": {
+    "description": "Header above the recent-photos library grid."
+  },
+  "postPhotoAccessOff": "Photo access is off.\nAllow access, or take a photo.",
+  "@postPhotoAccessOff": {
+    "description": "Shown in the post picker grid when photo permission is denied."
+  },
+  "postRatioOriginal": "Original",
+  "@postRatioOriginal": {
+    "description": "Crop ratio chip: frame the whole (original aspect) photo. Display only; the internal key stays 'Original'."
+  },
+  "postRatioFree": "Free",
+  "@postRatioFree": {
+    "description": "Crop ratio chip: free-form crop. Display only; the internal key stays 'Free'."
+  },
+  "postCropTitle": "Crop",
+  "@postCropTitle": {
+    "description": "App bar title of the crop step."
+  },
+  "postCropHint": "Drag the frame · pull a corner to resize",
+  "@postCropHint": {
+    "description": "Hint overlay on the crop stage."
+  },
+  "postPreparing": "Preparing…",
+  "@postPreparing": {
+    "description": "Loading overlay label while the cropped photo is prepared."
+  },
+  "postCouldNotPrepare": "Could not prepare the photo: {error}",
+  "@postCouldNotPrepare": {
+    "description": "Snackbar when preparing the cropped photo fails.",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "postDetailsTitle": "Details",
+  "@postDetailsTitle": {
+    "description": "App bar title of the post details step."
+  },
+  "postInvalidCoords": "Enter a valid latitude and longitude.",
+  "@postInvalidCoords": {
+    "description": "Snackbar when manually entered coordinates are invalid."
+  },
+  "postSourceExif": "From the photo's location",
+  "@postSourceExif": {
+    "description": "Source chip: the pin started from the photo's embedded location."
+  },
+  "postSourceDevice": "Your current location",
+  "@postSourceDevice": {
+    "description": "Source chip: the pin started from the device location."
+  },
+  "postSourceMapDefault": "Drag to place the pin",
+  "@postSourceMapDefault": {
+    "description": "Source chip: no location known, so the user drags to place the pin."
+  },
+  "postTimeAutoNote": "Time is kept automatically from the photo.",
+  "@postTimeAutoNote": {
+    "description": "Note under the date field explaining the time is taken from the photo."
+  },
+  "postSearchPlace": "Search a place",
+  "@postSearchPlace": {
+    "description": "Placeholder in the place-search field on the post map."
+  },
+  "postPlaceNameLabel": "Place name",
+  "@postPlaceNameLabel": {
+    "description": "Field label for the place name."
+  },
+  "postPlaceNameHint": "Name this place",
+  "@postPlaceNameHint": {
+    "description": "Placeholder in the place-name field."
+  },
+  "postDateLabel": "Date",
+  "@postDateLabel": {
+    "description": "Field label for the post date."
+  },
+  "postCaptionLabel": "Caption",
+  "@postCaptionLabel": {
+    "description": "Field label for the caption."
+  },
+  "postCaptionOptional": "· optional",
+  "@postCaptionOptional": {
+    "description": "Marker next to the caption label indicating it is optional. Keep the leading separator."
+  },
+  "postCaptionHint": "Say something about this place…",
+  "@postCaptionHint": {
+    "description": "Placeholder in the caption field."
+  },
+  "postEnterCoordsManually": "Enter coordinates manually",
+  "@postEnterCoordsManually": {
+    "description": "Toggle that reveals the manual coordinate inputs."
+  },
+  "postLatLabel": "LAT",
+  "@postLatLabel": {
+    "description": "Short label for the latitude input."
+  },
+  "postLngLabel": "LNG",
+  "@postLngLabel": {
+    "description": "Short label for the longitude input."
+  },
+  "postGoToCoords": "Go to coordinates",
+  "@postGoToCoords": {
+    "description": "Button that moves the map to the typed coordinates."
+  },
+  "postPost": "Post",
+  "@postPost": {
+    "description": "Primary button that creates the post."
+  },
+
+  "mapTabMap": "Map",
+  "@mapTabMap": {
+    "description": "Bottom pill segment that shows your own map."
+  },
+  "mapAddPhotoTooltip": "Add photo",
+  "@mapAddPhotoTooltip": {
+    "description": "Tooltip on the (+) compose button."
+  },
+  "mapYou": "You",
+  "@mapYou": {
+    "description": "The 'You' menu button tooltip and the username fallback in that menu."
+  },
+  "mapStyleLabel": "Map style",
+  "@mapStyleLabel": {
+    "description": "Menu item for map customization."
+  },
+  "mapComingSoon": "Coming soon",
+  "@mapComingSoon": {
+    "description": "Subtitle marking a not-yet-available menu item."
+  },
+  "mapSignOut": "Sign out",
+  "@mapSignOut": {
+    "description": "Menu item that signs the user out."
+  },
+  "mapCustomizationComingSoon": "Map customization is coming soon.",
+  "@mapCustomizationComingSoon": {
+    "description": "Snackbar shown when tapping the not-yet-available map style item."
+  },
+  "mapPosted": "Posted!",
+  "@mapPosted": {
+    "description": "Snackbar confirming a post was created."
+  },
+  "mapCouldNotPost": "Could not post: {error}",
+  "@mapCouldNotPost": {
+    "description": "Snackbar when creating a post fails.",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "friendMapTitle": "@{username}'s map",
+  "@friendMapTitle": {
+    "description": "App bar title of a friend's map.",
+    "placeholders": {
+      "username": { "type": "String" }
+    }
+  },
+
+  "photoSomewhere": "Somewhere",
+  "@photoSomewhere": {
+    "description": "Fallback place name when none is known for a photo."
+  },
+  "photoEditPost": "Edit post",
+  "@photoEditPost": {
+    "description": "Own-post menu item to edit the caption."
+  },
+  "photoDeletePost": "Delete post",
+  "@photoDeletePost": {
+    "description": "Own-post menu item to delete the post."
+  },
+  "photoDeleteTitle": "Delete this post?",
+  "@photoDeleteTitle": {
+    "description": "Title of the delete-post confirmation dialog."
+  },
+  "photoDeleteBody": "It will be removed from your map for good.",
+  "@photoDeleteBody": {
+    "description": "Body of the delete-post confirmation dialog."
+  },
+  "photoCouldNotSave": "Couldn't save: {error}",
+  "@photoCouldNotSave": {
+    "description": "Snackbar when saving the edited caption fails.",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "photoCouldNotPostComment": "Couldn't post: {error}",
+  "@photoCouldNotPostComment": {
+    "description": "Snackbar when posting a comment fails.",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "photoCouldNotDelete": "Couldn't delete: {error}",
+  "@photoCouldNotDelete": {
+    "description": "Snackbar when deleting a comment or post fails.",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "photoLikesCount": "{count, plural, =1{1 like} other{{count} likes}}",
+  "@photoLikesCount": {
+    "description": "Like count next to the reactor cluster.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "photoNoLikes": "No likes yet",
+  "@photoNoLikes": {
+    "description": "Shown when a post has no likes."
+  },
+  "photoLike": "Like",
+  "@photoLike": {
+    "description": "Like pill label when not yet liked."
+  },
+  "photoLiked": "Liked",
+  "@photoLiked": {
+    "description": "Like pill label when already liked."
+  },
+  "photoComments": "COMMENTS",
+  "@photoComments": {
+    "description": "Comments section header before the count is loaded."
+  },
+  "photoCommentsCount": "COMMENTS · {count}",
+  "@photoCommentsCount": {
+    "description": "Comments section header with the count.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "photoNoComments": "Be the first to leave a note.",
+  "@photoNoComments": {
+    "description": "Empty state when a post has no comments."
+  },
+  "photoCouldNotLoad": "Couldn't load photo",
+  "@photoCouldNotLoad": {
+    "description": "Shown when a photo image fails to load."
+  },
+  "photoAddComment": "Add a comment…",
+  "@photoAddComment": {
+    "description": "Placeholder in the comment composer."
+  },
+  "photoReply": "Reply",
+  "@photoReply": {
+    "description": "Small action under a comment that starts a reply to it."
+  },
+  "photoReplyingTo": "Replying to @{username}",
+  "@photoReplyingTo": {
+    "description": "Banner above the composer while writing a reply.",
+    "placeholders": {
+      "username": { "type": "String" }
+    }
+  },
+  "timeWeeksShort": "{count}w",
+  "@timeWeeksShort": {
+    "description": "Compact relative time in weeks.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "mapEmptyOwn": "No photos yet — tap + to pin your first one.",
+  "@mapEmptyOwn": {
+    "description": "Empty-state hint on your own map when you have no posts."
+  },
+  "mapEmptyFriend": "@{username} hasn’t posted any photos yet.",
+  "@mapEmptyFriend": {
+    "description": "Empty-state hint on a friend's map when they have no posts.",
+    "placeholders": {
+      "username": { "type": "String" }
+    }
+  },
+  "mapEmptyRecent": "No photos from friends in the last 24 hours.",
+  "@mapEmptyRecent": {
+    "description": "Empty-state hint on the Recent (last 24h) friends map."
+  },
+  "mapLoadError": "Couldn’t load the map.",
+  "@mapLoadError": {
+    "description": "Shown over the map when the initial load fails (with a Retry button)."
+  },
+  "mapGuidePost": "Tap + to put your first photo on the map.",
+  "@mapGuidePost": {
+    "description": "One-time coach mark for new sign-ups, pointing at the + button."
+  }
+}
