@@ -98,7 +98,9 @@ class SignUpStepScaffold extends StatelessWidget {
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Color(0xFF757575)),
+                            strokeWidth: 2,
+                            color: Color(0xFF757575),
+                          ),
                         )
                       : Text(buttonText ?? l.commonNext),
                 ),
@@ -119,8 +121,7 @@ InputDecoration signUpInputDecoration({String? hint, Widget? suffixIcon}) {
     hintText: hint,
     hintStyle: const TextStyle(color: Colors.grey),
     suffixIcon: suffixIcon,
-    contentPadding:
-        const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+    contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
       borderSide: BorderSide.none,

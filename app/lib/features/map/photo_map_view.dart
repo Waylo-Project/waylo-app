@@ -145,6 +145,7 @@ class PhotoMapViewState extends State<PhotoMapView> {
     if (_flagFocusPeak != null) return false;
     return zoom <= _flagZoomMax;
   }
+
   // Last time the live re-cluster throttle fired (per-user map photo tier).
   DateTime _lastThrottledRefresh = DateTime.fromMillisecondsSinceEpoch(0);
 
@@ -164,23 +165,27 @@ class PhotoMapViewState extends State<PhotoMapView> {
     // Push the scale bar down so it clears the system status bar (clock); the
     // home chrome (logo + buttons) sits just below it. Margins are in logical
     // pixels.
-    map.scaleBar.updateSettings(ScaleBarSettings(
-      position: OrnamentPosition.TOP_LEFT,
-      marginTop: 44,
-      marginLeft: 12,
-    ));
+    map.scaleBar.updateSettings(
+      ScaleBarSettings(
+        position: OrnamentPosition.TOP_LEFT,
+        marginTop: 44,
+        marginLeft: 12,
+      ),
+    );
     // Compass pinned to the very BOTTOM-RIGHT corner — the opposite side from
     // the Mapbox mark (bottom-left), so it clears every chrome element: up top
     // it collided with the Recent header's search button, and a raised margin
     // overlapped the "Just in" strip. Sit it level with the Mapbox logo.
-    map.compass.updateSettings(CompassSettings(
-      position: OrnamentPosition.BOTTOM_RIGHT,
-      marginBottom: 8,
-      marginRight: 12,
-      // Keep it visible (even at north) so the chrome can be spaced to never
-      // overlap; flip back to true to hide it when facing north.
-      fadeWhenFacingNorth: false,
-    ));
+    map.compass.updateSettings(
+      CompassSettings(
+        position: OrnamentPosition.BOTTOM_RIGHT,
+        marginBottom: 8,
+        marginRight: 12,
+        // Keep it visible (even at north) so the chrome can be spaced to never
+        // overlap; flip back to true to hide it when facing north.
+        fadeWhenFacingNorth: false,
+      ),
+    );
   }
 
   Future<void> _onStyleLoaded(StyleLoadedEventData _) async {
@@ -202,10 +207,12 @@ class PhotoMapViewState extends State<PhotoMapView> {
   Future<void> _centerOnMyLocation() async {
     final loc = await const PostLocationService().currentDeviceLocation();
     if (loc == null || _map == null) return;
-    await _map!.setCamera(CameraOptions(
-      center: Point(coordinates: Position(loc.longitude, loc.latitude)),
-      zoom: _initialZoom,
-    ));
+    await _map!.setCamera(
+      CameraOptions(
+        center: Point(coordinates: Position(loc.longitude, loc.latitude)),
+        zoom: _initialZoom,
+      ),
+    );
   }
 
   /// Decide whether the empty hint should show, by asking the feed if it has any
@@ -257,10 +264,12 @@ class PhotoMapViewState extends State<PhotoMapView> {
     if (pts.isEmpty) return;
     if (pts.length == 1) {
       final l = pts.first.location;
-      await map.setCamera(CameraOptions(
-        center: Point(coordinates: Position(l.longitude, l.latitude)),
-        zoom: 6,
-      ));
+      await map.setCamera(
+        CameraOptions(
+          center: Point(coordinates: Position(l.longitude, l.latitude)),
+          zoom: 6,
+        ),
+      );
       return;
     }
     var minLat = 90.0, maxLat = -90.0, minLng = 180.0, maxLng = -180.0;
@@ -275,18 +284,20 @@ class PhotoMapViewState extends State<PhotoMapView> {
     final zoom = span > 60
         ? 1.5
         : span > 20
-            ? 2.5
-            : span > 5
-                ? 3.5
-                : span > 1
-                    ? 5.0
-                    : 8.0;
-    await map.setCamera(CameraOptions(
-      center: Point(
-        coordinates: Position((minLng + maxLng) / 2, (minLat + maxLat) / 2),
+        ? 2.5
+        : span > 5
+        ? 3.5
+        : span > 1
+        ? 5.0
+        : 8.0;
+    await map.setCamera(
+      CameraOptions(
+        center: Point(
+          coordinates: Position((minLng + maxLng) / 2, (minLat + maxLat) / 2),
+        ),
+        zoom: zoom,
       ),
-      zoom: zoom,
-    ));
+    );
   }
 
   void _onPhotoTap(PointAnnotation a) {
@@ -312,9 +323,9 @@ class PhotoMapViewState extends State<PhotoMapView> {
     // Fallback to the country center (still inside the photo tier) if we can't
     // resolve the country or fetch its posts.
     Future<void> flyToFlag() => map.flyTo(
-          CameraOptions(center: a.geometry, zoom: _flagZoomFloor + 1.5),
-          MapAnimationOptions(duration: 800),
-        );
+      CameraOptions(center: a.geometry, zoom: _flagZoomFloor + 1.5),
+      MapAnimationOptions(duration: 800),
+    );
 
     final code = _flagCodeByAnnotation[a.id];
     if (code == null) return flyToFlag();
@@ -482,8 +493,8 @@ class PhotoMapViewState extends State<PhotoMapView> {
       final viewKey = flagTier
           ? 'F'
           : 'P;${sw.lat.toStringAsFixed(3)},${sw.lng.toStringAsFixed(3)}'
-              ';${ne.lat.toStringAsFixed(3)},${ne.lng.toStringAsFixed(3)}'
-              ';${state.zoom.toStringAsFixed(1)}';
+                ';${ne.lat.toStringAsFixed(3)},${ne.lng.toStringAsFixed(3)}'
+                ';${state.zoom.toStringAsFixed(1)}';
       if (!force && viewKey == _lastViewKey) return;
       _lastViewKey = viewKey;
 
@@ -553,13 +564,15 @@ class PhotoMapViewState extends State<PhotoMapView> {
       if (bytes == null || old == null) continue;
       await mgr.delete(old);
       _markerByAnnotation.remove(old.id);
-      final fresh = await mgr.create(PointAnnotationOptions(
-        geometry: Point(
-          coordinates: Position(m.location.longitude, m.location.latitude),
+      final fresh = await mgr.create(
+        PointAnnotationOptions(
+          geometry: Point(
+            coordinates: Position(m.location.longitude, m.location.latitude),
+          ),
+          image: bytes,
+          iconSize: 1.0,
         ),
-        image: bytes,
-        iconSize: 1.0,
-      ));
+      );
       _shown[m.iconId] = fresh;
       _markerByAnnotation[fresh.id] = m;
     }
@@ -594,12 +607,17 @@ class PhotoMapViewState extends State<PhotoMapView> {
     ];
     if (toAdd.isEmpty) return;
     await Future.wait(toAdd.map(_ensureFlagImage));
-    final addable = [for (final f in toAdd) if (_flagImageCache[keyOf(f)] != null) f];
+    final addable = [
+      for (final f in toAdd)
+        if (_flagImageCache[keyOf(f)] != null) f,
+    ];
     // Place each flag at its country's center (geocoded), like the original
     // waylo. Falls back to the centroid of the user's posts in that country if
     // the lookup fails.
     final places = await Future.wait(
-      addable.map((f) async => (await countryCenter(f.countryCode)) ?? f.location),
+      addable.map(
+        (f) async => (await countryCenter(f.countryCode)) ?? f.location,
+      ),
     );
     final created = await mgr.createMulti([
       for (var i = 0; i < addable.length; i++)
@@ -641,22 +659,24 @@ class PhotoMapViewState extends State<PhotoMapView> {
     if (_flagImageCache.containsKey(key)) return;
     try {
       final data = await rootBundle.load('assets/flags/${f.countryCode}.png');
-      _flagImageCache[key] =
-          await composeFlagMarker(data.buffer.asUint8List(), count: f.count);
+      _flagImageCache[key] = await composeFlagMarker(
+        data.buffer.asUint8List(),
+        count: f.count,
+      );
     } catch (e) {
       debugPrint('[map] flag image failed for ${f.countryCode}: $e');
     }
   }
 
   Future<List<_MapMarker>> _clusterByScreen(
-      MapboxMap map, List<FeedPoint> points) async {
+    MapboxMap map,
+    List<FeedPoint> points,
+  ) async {
     if (points.isEmpty) return const [];
     const cell = 70.0;
     final pixels = await map.pixelsForCoordinates([
       for (final p in points)
-        Point(
-          coordinates: Position(p.location.longitude, p.location.latitude),
-        ),
+        Point(coordinates: Position(p.location.longitude, p.location.latitude)),
     ]);
     final groups = <String, List<FeedPoint>>{};
     for (var i = 0; i < points.length; i++) {
@@ -681,8 +701,9 @@ class PhotoMapViewState extends State<PhotoMapView> {
     try {
       final bytes = await _feed.thumbnail(m.repImagePath);
       final avatarUrl = m.avatarUrl;
-      final avatarBytes =
-          avatarUrl == null ? null : await _avatarBytesFor(avatarUrl);
+      final avatarBytes = avatarUrl == null
+          ? null
+          : await _avatarBytesFor(avatarUrl);
       final composed = await composePhotoMarker(
         bytes,
         count: m.count,
@@ -824,7 +845,7 @@ abstract class MapFeed {
 /// One user's own map (photo tier + country flags). Each user's map, never merged.
 class UserMapFeed implements MapFeed {
   UserMapFeed(this.userId, [FeedRepository? repo])
-      : _repo = repo ?? FeedRepository();
+    : _repo = repo ?? FeedRepository();
 
   final String userId;
   final FeedRepository _repo;
@@ -963,8 +984,11 @@ class _MapEmptyHint extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.photo_library_outlined,
-                  size: 20, color: context.c.inkMuted),
+              Icon(
+                Icons.photo_library_outlined,
+                size: 20,
+                color: context.c.inkMuted,
+              ),
               const SizedBox(width: 10),
               Flexible(
                 child: Text(
@@ -1000,8 +1024,7 @@ class _MapErrorHint extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.cloud_off_outlined,
-                size: 26, color: context.c.inkFaint),
+            Icon(Icons.cloud_off_outlined, size: 26, color: context.c.inkFaint),
             const SizedBox(height: 10),
             Text(
               l.mapLoadError,
@@ -1017,7 +1040,10 @@ class _MapErrorHint extends StatelessWidget {
               onPressed: () => onRetry(),
               style: TextButton.styleFrom(
                 foregroundColor: context.c.primary,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 6,
+                ),
               ),
               child: Text(
                 l.commonRetry,
@@ -1045,11 +1071,14 @@ class _Chip extends StatelessWidget {
         color: context.c.surface,
         borderRadius: BorderRadius.circular(18),
         boxShadow: const [
-          BoxShadow(color: Color(0x1A000000), blurRadius: 20, offset: Offset(0, 6)),
+          BoxShadow(
+            color: Color(0x1A000000),
+            blurRadius: 20,
+            offset: Offset(0, 6),
+          ),
         ],
       ),
       child: child,
     );
   }
 }
-

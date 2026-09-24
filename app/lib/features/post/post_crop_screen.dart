@@ -81,10 +81,10 @@ class _PostCropScreenState extends State<PostCropScreen> {
   }
 
   String _ratioLabel(AppLocalizations l, String name) => switch (name) {
-        'Original' => l.postRatioOriginal,
-        'Free' => l.postRatioFree,
-        _ => name,
-      };
+    'Original' => l.postRatioOriginal,
+    'Free' => l.postRatioFree,
+    _ => name,
+  };
 
   double? _ratioOf(String name) {
     if (name == 'Original' && _src != null) return _src!.width / _src!.height;
@@ -147,7 +147,10 @@ class _PostCropScreenState extends State<PostCropScreen> {
       }
     }
     var r = Rect.fromCenter(
-        center: start.center + _gesturePan, width: w, height: h);
+      center: start.center + _gesturePan,
+      width: w,
+      height: h,
+    );
     double dx = 0, dy = 0;
     if (r.left < area.left) dx = area.left - r.left;
     if (r.right > area.right) dx = area.right - r.right;
@@ -177,8 +180,12 @@ class _PostCropScreenState extends State<PostCropScreen> {
     );
     var w = math.max(_minSize, crop.width + (c.contains('e') ? d.dx : -d.dx));
     var h = w / ar;
-    final maxW = c.contains('e') ? area.right - anchor.dx : anchor.dx - area.left;
-    final maxH = c.contains('s') ? area.bottom - anchor.dy : anchor.dy - area.top;
+    final maxW = c.contains('e')
+        ? area.right - anchor.dx
+        : anchor.dx - area.left;
+    final maxH = c.contains('s')
+        ? area.bottom - anchor.dy
+        : anchor.dy - area.top;
     if (w > maxW) {
       w = maxW;
       h = w / ar;
@@ -211,8 +218,12 @@ class _PostCropScreenState extends State<PostCropScreen> {
       final outW = srcRect.width.round().clamp(1, 4096);
       final outH = srcRect.height.round().clamp(1, 4096);
       final recorder = ui.PictureRecorder();
-      Canvas(recorder).drawImageRect(src, srcRect,
-          Rect.fromLTWH(0, 0, outW.toDouble(), outH.toDouble()), Paint());
+      Canvas(recorder).drawImageRect(
+        src,
+        srcRect,
+        Rect.fromLTWH(0, 0, outW.toDouble(), outH.toDouble()),
+        Paint(),
+      );
       final img = await recorder.endRecording().toImage(outW, outH);
       final data = await img.toByteData(format: ui.ImageByteFormat.png);
       img.dispose();
@@ -275,7 +286,9 @@ class _PostCropScreenState extends State<PostCropScreen> {
       if (mounted) {
         setState(() => _working = false);
         showErrorDialog(
-            context, AppLocalizations.of(context).postCouldNotPrepare('$e'));
+          context,
+          AppLocalizations.of(context).postCouldNotPrepare('$e'),
+        );
       }
     }
   }
@@ -288,58 +301,67 @@ class _PostCropScreenState extends State<PostCropScreen> {
       body: Stack(
         children: [
           Column(
-        children: [
-          SafeArea(
-            bottom: false,
-            child: Container(
-              height: 52,
-              color: context.c.surface,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: _working ? null : () => Navigator.pop(context),
-                    style: TextButton.styleFrom(
-                        foregroundColor: context.c.inkMuted),
-                    child: Text(l.commonBack, style: const TextStyle(fontSize: 16)),
-                  ),
-                  Text(l.postCropTitle,
-                      style: TextStyle(
+            children: [
+              SafeArea(
+                bottom: false,
+                child: Container(
+                  height: 52,
+                  color: context.c.surface,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: _working
+                            ? null
+                            : () => Navigator.pop(context),
+                        style: TextButton.styleFrom(
+                          foregroundColor: context.c.inkMuted,
+                        ),
+                        child: Text(
+                          l.commonBack,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      Text(
+                        l.postCropTitle,
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: context.c.ink)),
-                  _NextButton(onTap: _working ? null : _next),
-                ],
-              ),
-            ),
-          ),
-          Expanded(child: _buildStage()),
-          Container(
-            color: context.c.surface,
-            child: SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      for (final name in _presets.keys) ...[
-                        _RatioChip(
-                          label: _ratioLabel(l, name),
-                          selected: _ratio == name,
-                          onTap: () => _applyRatio(name),
+                          color: context.c.ink,
                         ),
-                        const SizedBox(width: 8),
-                      ],
+                      ),
+                      _NextButton(onTap: _working ? null : _next),
                     ],
                   ),
                 ),
               ),
-            ),
-          ),
-        ],
+              Expanded(child: _buildStage()),
+              Container(
+                color: context.c.surface,
+                child: SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          for (final name in _presets.keys) ...[
+                            _RatioChip(
+                              label: _ratioLabel(l, name),
+                              selected: _ratio == name,
+                              onTap: () => _applyRatio(name),
+                            ),
+                            const SizedBox(width: 8),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           if (_working)
             Positioned.fill(
@@ -351,8 +373,10 @@ class _PostCropScreenState extends State<PostCropScreen> {
                     children: [
                       const CircularProgressIndicator(color: Colors.white),
                       SizedBox(height: 14),
-                      Text(l.postPreparing,
-                          style: TextStyle(color: Colors.white, fontSize: 14)),
+                      Text(
+                        l.postPreparing,
+                        style: TextStyle(color: Colors.white, fontSize: 14),
+                      ),
                     ],
                   ),
                 ),
@@ -374,7 +398,9 @@ class _PostCropScreenState extends State<PostCropScreen> {
           final area = _stagePad.deflateRect(Offset.zero & stage);
           _stage = stage;
           _imgRect = _containRect(
-              Size(src.width.toDouble(), src.height.toDouble()), area);
+            Size(src.width.toDouble(), src.height.toDouble()),
+            area,
+          );
           _crop = _fitRect(_ratioOf(_ratio), _imgRect!);
         }
         final imgRect = _imgRect, crop = _crop;
@@ -420,13 +446,13 @@ class _PostCropScreenState extends State<PostCropScreen> {
                   left: e == 'w'
                       ? crop.left - handle / 2
                       : (e == 'e'
-                          ? crop.right - handle / 2
-                          : crop.center.dx - handle / 2),
+                            ? crop.right - handle / 2
+                            : crop.center.dx - handle / 2),
                   top: e == 'n'
                       ? crop.top - handle / 2
                       : (e == 's'
-                          ? crop.bottom - handle / 2
-                          : crop.center.dy - handle / 2),
+                            ? crop.bottom - handle / 2
+                            : crop.center.dy - handle / 2),
                   width: handle,
                   height: handle,
                   child: GestureDetector(
@@ -441,8 +467,10 @@ class _PostCropScreenState extends State<PostCropScreen> {
               right: 0,
               child: Center(
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Color(0x8C0F1216),
                     borderRadius: BorderRadius.circular(20),
@@ -474,13 +502,16 @@ class _NextButton extends StatelessWidget {
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-          child: Text(AppLocalizations.of(context).commonNext,
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: onTap == null
-                      ? context.c.onPrimary.withValues(alpha: 0.4)
-                      : context.c.onPrimary)),
+          child: Text(
+            AppLocalizations.of(context).commonNext,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: onTap == null
+                  ? context.c.onPrimary.withValues(alpha: 0.4)
+                  : context.c.onPrimary,
+            ),
+          ),
         ),
       ),
     );
@@ -488,8 +519,11 @@ class _NextButton extends StatelessWidget {
 }
 
 class _RatioChip extends StatelessWidget {
-  const _RatioChip(
-      {required this.label, required this.selected, required this.onTap});
+  const _RatioChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
   final String label;
   final bool selected;
   final VoidCallback onTap;
@@ -503,11 +537,14 @@ class _RatioChip extends StatelessWidget {
           color: selected ? context.c.primary : context.c.fill,
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Text(label,
-            style: TextStyle(
-                fontSize: 14,
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                color: selected ? context.c.onPrimary : context.c.inkMuted)),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+            color: selected ? context.c.onPrimary : context.c.inkMuted,
+          ),
+        ),
       ),
     );
   }
@@ -550,7 +587,9 @@ class _EdgeMark extends StatelessWidget {
         width: 18,
         height: 4,
         decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(2)),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(2),
+        ),
       ),
     );
   }

@@ -66,7 +66,9 @@ class _MapHomePageState extends State<MapHomePage> {
   @override
   Widget build(BuildContext context) {
     if (!AppConfig.isSupabaseConfigured) {
-      return const Scaffold(body: Stack(children: [_BareMap(), _SetupBanner()]));
+      return const Scaffold(
+        body: Stack(children: [_BareMap(), _SetupBanner()]),
+      );
     }
     final uid = Supabase.instance.client.auth.currentUser!.id;
 
@@ -123,10 +125,7 @@ class _MapHomePageState extends State<MapHomePage> {
           children: [
             Image.asset('assets/logos/logo2.png', height: 44),
             const Spacer(),
-            if (_tab == 0) ...[
-              _addButton(),
-              const SizedBox(width: 8),
-            ],
+            if (_tab == 0) ...[_addButton(), const SizedBox(width: 8)],
             _youButton(context),
           ],
         ),
@@ -151,10 +150,14 @@ class _MapHomePageState extends State<MapHomePage> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _pillSegment(label: AppLocalizations.of(context).mapTabMap, index: 0),
               _pillSegment(
-                  label: AppLocalizations.of(context).friendsSegFriends,
-                  index: 1),
+                label: AppLocalizations.of(context).mapTabMap,
+                index: 0,
+              ),
+              _pillSegment(
+                label: AppLocalizations.of(context).friendsSegFriends,
+                index: 1,
+              ),
             ],
           ),
         ),
@@ -203,7 +206,9 @@ class _MapHomePageState extends State<MapHomePage> {
         PopupMenuItem(
           value: PhotoSource.gallery,
           child: _MenuRow(
-              icon: Icons.photo_library, label: l.settingsChooseFromGallery),
+            icon: Icons.photo_library,
+            label: l.settingsChooseFromGallery,
+          ),
         ),
       ],
       child: _circleVisual(Icons.add),
@@ -223,9 +228,11 @@ class _MapHomePageState extends State<MapHomePage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       onSelected: (v) async {
         if (v == 'settings') {
-          Navigator.of(context).push(MaterialPageRoute<void>(
-            builder: (_) => SettingsScreen(profile: widget.profile),
-          ));
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => SettingsScreen(profile: widget.profile),
+            ),
+          );
         } else if (v == 'signout') {
           await Supabase.instance.client.auth.signOut();
         }
@@ -255,7 +262,10 @@ class _MapHomePageState extends State<MapHomePage> {
         const PopupMenuDivider(),
         PopupMenuItem<String>(
           value: 'settings',
-          child: _MenuRow(icon: Icons.settings_outlined, label: l.settingsTitle),
+          child: _MenuRow(
+            icon: Icons.settings_outlined,
+            label: l.settingsTitle,
+          ),
         ),
         PopupMenuItem<String>(
           value: 'signout',
@@ -297,9 +307,7 @@ class _MenuRow extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(label, style: TextStyle(color: context.c.ink)),
-          ],
+          children: [Text(label, style: TextStyle(color: context.c.ink))],
         ),
       ],
     );
@@ -317,8 +325,9 @@ class _BareMap extends StatelessWidget {
         center: Point(coordinates: Position(126.9780, 37.5665)),
         zoom: 12,
       ),
-      onMapCreated: (map) => map.style
-          .setProjection(StyleProjection(name: StyleProjectionName.globe)),
+      onMapCreated: (map) => map.style.setProjection(
+        StyleProjection(name: StyleProjectionName.globe),
+      ),
     );
   }
 }
@@ -381,52 +390,56 @@ class _PostGuideCoach extends StatelessWidget {
                     // Pointer aimed up at the (+) button (2nd icon from right).
                     const Padding(
                       padding: EdgeInsets.only(right: 46),
-                      child: Icon(Icons.arrow_drop_up,
-                          color: Colors.white, size: 40),
+                      child: Icon(
+                        Icons.arrow_drop_up,
+                        color: Colors.white,
+                        size: 40,
+                      ),
                     ),
                     Transform.translate(
                       offset: const Offset(0, -14),
                       child: Container(
-                      constraints: const BoxConstraints(maxWidth: 250),
-                      padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: const [
-                          BoxShadow(
+                        constraints: const BoxConstraints(maxWidth: 250),
+                        padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: const [
+                            BoxShadow(
                               color: Color(0x33000000),
                               blurRadius: 18,
-                              offset: Offset(0, 6)),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l.mapGuidePost,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: context.c.ink,
-                              height: 1.35,
+                              offset: Offset(0, 6),
                             ),
-                          ),
-                          const SizedBox(height: 10),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              l.commonGotIt,
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l.mapGuidePost,
                               style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                                color: context.c.checkAccent,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: context.c.ink,
+                                height: 1.35,
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 10),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                l.commonGotIt,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: context.c.checkAccent,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
                     ),
                   ],
                 ),

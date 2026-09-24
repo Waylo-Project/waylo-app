@@ -13,7 +13,7 @@ import 'geocoding.dart';
 /// enforce. v1 is one photo, so the index is always 0.
 class PostRepository {
   PostRepository([SupabaseClient? client])
-      : _client = client ?? Supabase.instance.client;
+    : _client = client ?? Supabase.instance.client;
 
   final SupabaseClient _client;
   static const _uuid = Uuid();
@@ -38,7 +38,9 @@ class PostRepository {
 
     final group = _uuid.v4();
     final path = '$uid/$group/0.jpg';
-    await _client.storage.from('photos').uploadBinary(
+    await _client.storage
+        .from('photos')
+        .uploadBinary(
           path,
           bytes,
           fileOptions: const FileOptions(contentType: 'image/jpeg'),
@@ -54,7 +56,9 @@ class PostRepository {
       quality: 70,
     );
     if (thumb != null) {
-      await _client.storage.from('photos').uploadBinary(
+      await _client.storage
+          .from('photos')
+          .uploadBinary(
             '$uid/$group/0_thumb.jpg',
             thumb,
             fileOptions: const FileOptions(contentType: 'image/jpeg'),
@@ -64,15 +68,18 @@ class PostRepository {
     // Country for the zoomed-out flag tier (best-effort; null if it fails).
     final countryCode = await reverseCountryCode(draft.location);
 
-    final postId = await _client.rpc('create_post', params: {
-      'p_lng': draft.location.longitude,
-      'p_lat': draft.location.latitude,
-      'p_caption': draft.caption.isEmpty ? null : draft.caption,
-      'p_taken_at': draft.takenAt?.toIso8601String(),
-      'p_image_paths': [path],
-      'p_country_code': countryCode,
-      'p_place_label': draft.placeLabel,
-    });
+    final postId = await _client.rpc(
+      'create_post',
+      params: {
+        'p_lng': draft.location.longitude,
+        'p_lat': draft.location.latitude,
+        'p_caption': draft.caption.isEmpty ? null : draft.caption,
+        'p_taken_at': draft.takenAt?.toIso8601String(),
+        'p_image_paths': [path],
+        'p_country_code': countryCode,
+        'p_place_label': draft.placeLabel,
+      },
+    );
     return postId as String;
   }
 }

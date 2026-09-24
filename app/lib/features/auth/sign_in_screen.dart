@@ -63,7 +63,10 @@ class _SignInScreenState extends State<SignInScreen> {
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           l.authLogIn,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
       ),
@@ -96,9 +99,13 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
                 if (_error != null) ...[
                   const SizedBox(height: 14),
-                  Text(_error!,
-                      style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.w600)),
+                  Text(
+                    _error!,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ],
                 const SizedBox(height: 30),
                 ElevatedButton(

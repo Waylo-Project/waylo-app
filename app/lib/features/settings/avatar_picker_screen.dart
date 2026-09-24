@@ -91,8 +91,10 @@ class _AvatarPickerScreenState extends State<AvatarPickerScreen> {
     // image+video+audio, which fails when only READ_MEDIA_IMAGES is granted.
     final ps = await PhotoManager.requestPermissionExtend(
       requestOption: const PermissionRequestOption(
-        androidPermission:
-            AndroidPermission(type: RequestType.image, mediaLocation: false),
+        androidPermission: AndroidPermission(
+          type: RequestType.image,
+          mediaLocation: false,
+        ),
       ),
     );
     if (!ps.hasAccess) {
@@ -124,8 +126,7 @@ class _AvatarPickerScreenState extends State<AvatarPickerScreen> {
       });
       _centerPreview();
     }
-    final bytes =
-        await asset.thumbnailDataWithSize(ThumbnailSize(1280, 1280));
+    final bytes = await asset.thumbnailDataWithSize(ThumbnailSize(1280, 1280));
     if (bytes == null || !mounted) return;
     final size = (asset.width > 0 && asset.height > 0)
         ? Size(asset.width.toDouble(), asset.height.toDouble())
@@ -139,8 +140,10 @@ class _AvatarPickerScreenState extends State<AvatarPickerScreen> {
   }
 
   Future<void> _openCamera() async {
-    final shot =
-        await ImagePicker().pickImage(source: ImageSource.camera, maxWidth: 2048);
+    final shot = await ImagePicker().pickImage(
+      source: ImageSource.camera,
+      maxWidth: 2048,
+    );
     if (shot == null) return;
     final bytes = await shot.readAsBytes();
     if (!mounted) return;
@@ -184,8 +187,10 @@ class _AvatarPickerScreenState extends State<AvatarPickerScreen> {
                     children: [
                       IconButton(
                         onPressed: _working ? null : _openCamera,
-                        icon: Icon(Icons.photo_camera_outlined,
-                            color: context.c.inkMuted),
+                        icon: Icon(
+                          Icons.photo_camera_outlined,
+                          color: context.c.inkMuted,
+                        ),
                       ),
                       TextButton(
                         onPressed: (_working || _previewBytes == null)
@@ -218,10 +223,7 @@ class _AvatarPickerScreenState extends State<AvatarPickerScreen> {
                 RepaintBoundary(
                   key: _previewKey,
                   child: ClipRect(
-                    child: ColoredBox(
-                      color: _bg,
-                      child: _buildPreview(),
-                    ),
+                    child: ColoredBox(color: _bg, child: _buildPreview()),
                   ),
                 ),
                 const IgnorePointer(
@@ -261,7 +263,11 @@ class _AvatarPickerScreenState extends State<AvatarPickerScreen> {
           child: SizedBox(
             width: childW,
             height: childH,
-            child: Image.memory(bytes, fit: BoxFit.cover, gaplessPlayback: true),
+            child: Image.memory(
+              bytes,
+              fit: BoxFit.cover,
+              gaplessPlayback: true,
+            ),
           ),
         );
       },
@@ -285,8 +291,10 @@ class _AvatarPickerScreenState extends State<AvatarPickerScreen> {
               const SizedBox(height: 14),
               TextButton(
                 onPressed: PhotoManager.openSetting,
-                child: Text(l.avatarOpenSettings,
-                    style: TextStyle(color: context.c.primary)),
+                child: Text(
+                  l.avatarOpenSettings,
+                  style: TextStyle(color: context.c.primary),
+                ),
               ),
             ],
           ),
@@ -314,8 +322,9 @@ class _AvatarPickerScreenState extends State<AvatarPickerScreen> {
   Future<void> _crop() async {
     setState(() => _working = true);
     try {
-      final boundary = _previewKey.currentContext!.findRenderObject()
-          as RenderRepaintBoundary;
+      final boundary =
+          _previewKey.currentContext!.findRenderObject()
+              as RenderRepaintBoundary;
       final image = await boundary.toImage(
         pixelRatio: MediaQuery.of(context).devicePixelRatio,
       );
@@ -327,7 +336,9 @@ class _AvatarPickerScreenState extends State<AvatarPickerScreen> {
       if (mounted) {
         setState(() => _working = false);
         showErrorDialog(
-            context, AppLocalizations.of(context).avatarCouldNotCrop('$e'));
+          context,
+          AppLocalizations.of(context).avatarCouldNotCrop('$e'),
+        );
       }
     }
   }
@@ -366,8 +377,9 @@ class _GridCellState extends State<_GridCell> {
       _bytes = cached;
       return;
     }
-    final bytes =
-        await widget.asset.thumbnailDataWithSize(const ThumbnailSize.square(220));
+    final bytes = await widget.asset.thumbnailDataWithSize(
+      const ThumbnailSize.square(220),
+    );
     if (bytes == null) return;
     widget.cache[widget.asset.id] = bytes;
     if (mounted) setState(() => _bytes = bytes);

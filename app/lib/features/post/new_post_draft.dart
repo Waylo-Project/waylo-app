@@ -32,7 +32,11 @@ class NewPostDraft {
   /// the auto-filled name, which viewers then see geocoded in their language.
   final String? placeLabel;
 
-  NewPostDraft copyWith({LatLng? location, String? caption, String? placeLabel}) {
+  NewPostDraft copyWith({
+    LatLng? location,
+    String? caption,
+    String? placeLabel,
+  }) {
     return NewPostDraft(
       photo: photo,
       location: location ?? this.location,

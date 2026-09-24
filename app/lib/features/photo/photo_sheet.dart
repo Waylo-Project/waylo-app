@@ -118,13 +118,18 @@ class _PhotoSheetState extends State<PhotoSheet>
     final replyTo = _replyTarget;
     setState(() => _sending = true);
     try {
-      await _cardKeys[_index].currentState?.submitComment(text, replyTo: replyTo);
+      await _cardKeys[_index].currentState?.submitComment(
+        text,
+        replyTo: replyTo,
+      );
       _commentCtrl.clear();
       if (mounted) setState(() => _replyTarget = null);
     } catch (e) {
       if (mounted) {
         showErrorDialog(
-            context, AppLocalizations.of(context).photoCouldNotPostComment('$e'));
+          context,
+          AppLocalizations.of(context).photoCouldNotPostComment('$e'),
+        );
       }
     } finally {
       if (mounted) setState(() => _sending = false);
@@ -153,8 +158,10 @@ class _PhotoSheetState extends State<PhotoSheet>
     return Align(
       alignment: Alignment.bottomCenter,
       child: SlideTransition(
-        position: Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero)
-            .animate(CurvedAnimation(parent: _anim, curve: Curves.easeOutCubic)),
+        position: Tween<Offset>(
+          begin: const Offset(0, 1),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(parent: _anim, curve: Curves.easeOutCubic)),
         child: Material(
           color: context.c.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -382,11 +389,13 @@ class _PhotoCardState extends State<_PhotoCard>
 
   Future<void> _toggleLike() async {
     final next = !_likes.likedByMe;
-    setState(() => _likes = LikeSummary(
-          count: _likes.count + (next ? 1 : -1),
-          likedByMe: next,
-          topLikers: _likes.topLikers,
-        ));
+    setState(
+      () => _likes = LikeSummary(
+        count: _likes.count + (next ? 1 : -1),
+        likedByMe: next,
+        topLikers: _likes.topLikers,
+      ),
+    );
     try {
       await _feed.setLike(_postId, next);
       final fresh = await _feed.likeSummary(_postId);
@@ -394,25 +403,33 @@ class _PhotoCardState extends State<_PhotoCard>
     } catch (_) {
       // Revert on failure.
       if (mounted) {
-        setState(() => _likes = LikeSummary(
-              count: _likes.count + (next ? -1 : 1),
-              likedByMe: !next,
-              topLikers: _likes.topLikers,
-            ));
+        setState(
+          () => _likes = LikeSummary(
+            count: _likes.count + (next ? -1 : 1),
+            likedByMe: !next,
+            topLikers: _likes.topLikers,
+          ),
+        );
       }
     }
   }
 
   Future<void> _deleteComment(Comment c) async {
-    setState(() =>
-        _comments = [for (final x in _comments ?? <Comment>[]) if (x.id != c.id) x]);
+    setState(
+      () => _comments = [
+        for (final x in _comments ?? <Comment>[])
+          if (x.id != c.id) x,
+      ],
+    );
     try {
       await _feed.deleteComment(c.id);
     } catch (e) {
       if (mounted) {
         setState(() => _comments = [...?_comments, c]);
         showErrorDialog(
-            context, AppLocalizations.of(context).photoCouldNotDelete('$e'));
+          context,
+          AppLocalizations.of(context).photoCouldNotDelete('$e'),
+        );
       }
     }
   }
@@ -498,7 +515,9 @@ class _PhotoCardState extends State<_PhotoCard>
     } catch (e) {
       if (mounted) {
         showErrorDialog(
-            context, AppLocalizations.of(context).photoCouldNotDelete('$e'));
+          context,
+          AppLocalizations.of(context).photoCouldNotDelete('$e'),
+        );
       }
     }
   }
@@ -596,46 +615,44 @@ class _PhotoCardState extends State<_PhotoCard>
         child: urls == null
             ? const _PhotoLoading()
             : urls.isEmpty
-                ? const _PhotoError()
-                : Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      urls.length == 1
-                          ? _zoomable(_PhotoImage(url: urls.first))
-                          : PageView.builder(
-                              controller: _innerPage,
-                              itemCount: urls.length,
-                              onPageChanged: (i) =>
-                                  setState(() => _photoIndex = i),
-                              itemBuilder: (_, i) =>
-                                  _zoomable(_PhotoImage(url: urls[i])),
-                            ),
-                      if (urls.length > 1)
-                        Positioned(
-                          bottom: 10,
-                          left: 0,
-                          right: 0,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              for (var i = 0; i < urls.length; i++)
-                                Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 3),
-                                  width: 6,
-                                  height: 6,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: i == _photoIndex
-                                        ? Colors.white
-                                        : Colors.white54,
-                                  ),
-                                ),
-                            ],
-                          ),
+            ? const _PhotoError()
+            : Stack(
+                fit: StackFit.expand,
+                children: [
+                  urls.length == 1
+                      ? _zoomable(_PhotoImage(url: urls.first))
+                      : PageView.builder(
+                          controller: _innerPage,
+                          itemCount: urls.length,
+                          onPageChanged: (i) => setState(() => _photoIndex = i),
+                          itemBuilder: (_, i) =>
+                              _zoomable(_PhotoImage(url: urls[i])),
                         ),
-                    ],
-                  ),
+                  if (urls.length > 1)
+                    Positioned(
+                      bottom: 10,
+                      left: 0,
+                      right: 0,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          for (var i = 0; i < urls.length; i++)
+                            Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 3),
+                              width: 6,
+                              height: 6,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: i == _photoIndex
+                                    ? Colors.white
+                                    : Colors.white54,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
       ),
     );
   }
@@ -655,19 +672,26 @@ class _PhotoCardState extends State<_PhotoCard>
       itemBuilder: (_) => [
         PopupMenuItem(
           value: 'edit',
-          child: Row(children: [
-            Icon(Icons.edit_outlined, size: 19, color: context.c.ink),
-            const SizedBox(width: 10),
-            Text(l.photoEditPost),
-          ]),
+          child: Row(
+            children: [
+              Icon(Icons.edit_outlined, size: 19, color: context.c.ink),
+              const SizedBox(width: 10),
+              Text(l.photoEditPost),
+            ],
+          ),
         ),
         PopupMenuItem(
           value: 'delete',
-          child: Row(children: [
-            Icon(Icons.delete_outline, size: 19, color: context.c.danger),
-            const SizedBox(width: 10),
-            Text(l.photoDeletePost, style: TextStyle(color: context.c.danger)),
-          ]),
+          child: Row(
+            children: [
+              Icon(Icons.delete_outline, size: 19, color: context.c.danger),
+              const SizedBox(width: 10),
+              Text(
+                l.photoDeletePost,
+                style: TextStyle(color: context.c.danger),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -811,8 +835,11 @@ class _PhotoError extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.image_not_supported_outlined,
-              color: context.c.inkFaint, size: 26),
+          Icon(
+            Icons.image_not_supported_outlined,
+            color: context.c.inkFaint,
+            size: 26,
+          ),
           const SizedBox(height: 6),
           Text(
             AppLocalizations.of(context).photoCouldNotLoad,
@@ -895,7 +922,9 @@ class _LikePill extends StatelessWidget {
         duration: const Duration(milliseconds: 140),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
-          color: liked ? context.c.primary.withValues(alpha: 0.25) : context.c.surface,
+          color: liked
+              ? context.c.primary.withValues(alpha: 0.25)
+              : context.c.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: liked ? context.c.primary : context.c.hairline,
@@ -982,16 +1011,21 @@ class _CommentBubble extends StatelessWidget {
                       const Spacer(),
                       GestureDetector(
                         onTap: onDelete,
-                        child: Icon(Icons.close,
-                            size: 15, color: context.c.inkFaint),
+                        child: Icon(
+                          Icons.close,
+                          size: 15,
+                          color: context.c.inkFaint,
+                        ),
                       ),
                     ],
                   ],
                 ),
                 const SizedBox(height: 4),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 9,
+                  ),
                   decoration: BoxDecoration(
                     color: context.c.fill,
                     borderRadius: const BorderRadius.only(
@@ -1078,8 +1112,9 @@ class _Composer extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        AppLocalizations.of(context)
-                            .photoReplyingTo(replyTo.username),
+                        AppLocalizations.of(
+                          context,
+                        ).photoReplyingTo(replyTo.username),
                         style: TextStyle(
                           fontSize: 12.5,
                           fontWeight: FontWeight.w600,
@@ -1092,7 +1127,11 @@ class _Composer extends StatelessWidget {
                       behavior: HitTestBehavior.opaque,
                       child: Padding(
                         padding: const EdgeInsets.all(2),
-                        child: Icon(Icons.close, size: 16, color: context.c.inkFaint),
+                        child: Icon(
+                          Icons.close,
+                          size: 16,
+                          color: context.c.inkFaint,
+                        ),
                       ),
                     ),
                   ],
@@ -1100,52 +1139,57 @@ class _Composer extends StatelessWidget {
               ),
             Row(
               children: [
-            Expanded(
-              child: TextField(
-                controller: controller,
-                focusNode: focusNode,
-                textInputAction: TextInputAction.send,
-                onSubmitted: (_) => onSubmit(),
-                minLines: 1,
-                maxLines: 4,
-                style: TextStyle(fontSize: 14, color: context.c.ink),
-                decoration: InputDecoration(
-                  hintText: AppLocalizations.of(context).photoAddComment,
-                  hintStyle: TextStyle(color: context.c.inkFaint),
-                  filled: true,
-                  fillColor: context.c.fill,
-                  isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 12),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(22),
-                    borderSide: BorderSide.none,
+                Expanded(
+                  child: TextField(
+                    controller: controller,
+                    focusNode: focusNode,
+                    textInputAction: TextInputAction.send,
+                    onSubmitted: (_) => onSubmit(),
+                    minLines: 1,
+                    maxLines: 4,
+                    style: TextStyle(fontSize: 14, color: context.c.ink),
+                    decoration: InputDecoration(
+                      hintText: AppLocalizations.of(context).photoAddComment,
+                      hintStyle: TextStyle(color: context.c.inkFaint),
+                      filled: true,
+                      fillColor: context.c.fill,
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(22),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            GestureDetector(
-              onTap: sending ? null : onSubmit,
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: context.c.primary,
-                  shape: BoxShape.circle,
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: sending ? null : onSubmit,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: context.c.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: sending
+                        ? Padding(
+                            padding: const EdgeInsets.all(11),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: context.c.onPrimary,
+                            ),
+                          )
+                        : Icon(
+                            Icons.arrow_forward,
+                            size: 20,
+                            color: context.c.onPrimary,
+                          ),
+                  ),
                 ),
-                child: sending
-                    ? Padding(
-                        padding: const EdgeInsets.all(11),
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: context.c.onPrimary,
-                        ),
-                      )
-                    : Icon(Icons.arrow_forward,
-                        size: 20, color: context.c.onPrimary),
-              ),
-            ),
               ],
             ),
           ],

@@ -30,18 +30,20 @@ class _SignUpGenderScreenState extends State<SignUpGenderScreen> {
   String? _selected;
 
   String _genderLabel(AppLocalizations l, String value) => switch (value) {
-        'Male' => l.genderMale,
-        'Female' => l.genderFemale,
-        'Non-binary' => l.genderNonBinary,
-        'Other' => l.genderOther,
-        'Prefer not to say' => l.genderPreferNotToSay,
-        _ => value,
-      };
+    'Male' => l.genderMale,
+    'Female' => l.genderFemale,
+    'Non-binary' => l.genderNonBinary,
+    'Other' => l.genderOther,
+    'Prefer not to say' => l.genderPreferNotToSay,
+    _ => value,
+  };
 
   void _next() {
     widget.data.gender = _selected;
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => SignUpUsernameScreen(data: widget.data)),
+      MaterialPageRoute(
+        builder: (_) => SignUpUsernameScreen(data: widget.data),
+      ),
     );
   }
 
@@ -68,11 +70,15 @@ class _SignUpGenderScreenState extends State<SignUpGenderScreen> {
               style: const TextStyle(color: Colors.grey, fontSize: 16),
             ),
             items: _options
-                .map((g) => DropdownMenuItem(
-                      value: g,
-                      child: Text(_genderLabel(l, g),
-                          style: const TextStyle(fontSize: 16)),
-                    ))
+                .map(
+                  (g) => DropdownMenuItem(
+                    value: g,
+                    child: Text(
+                      _genderLabel(l, g),
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                )
                 .toList(),
             onChanged: (v) => setState(() => _selected = v),
           ),

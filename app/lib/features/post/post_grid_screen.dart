@@ -49,8 +49,10 @@ class _PostGridScreenState extends State<PostGridScreen> {
   Future<void> _loadLibrary() async {
     final ps = await PhotoManager.requestPermissionExtend(
       requestOption: PermissionRequestOption(
-        androidPermission:
-            AndroidPermission(type: RequestType.image, mediaLocation: true),
+        androidPermission: AndroidPermission(
+          type: RequestType.image,
+          mediaLocation: true,
+        ),
       ),
     );
     if (!ps.hasAccess) {
@@ -71,8 +73,9 @@ class _PostGridScreenState extends State<PostGridScreen> {
     setState(() => _busy = true);
     try {
       await Permission.accessMediaLocation.request();
-      final bytes =
-          await asset.thumbnailDataWithSize(ThumbnailSize(2048, 2048));
+      final bytes = await asset.thumbnailDataWithSize(
+        ThumbnailSize(2048, 2048),
+      );
       if (bytes == null || !mounted) {
         setState(() => _busy = false);
         return;
@@ -87,7 +90,10 @@ class _PostGridScreenState extends State<PostGridScreen> {
       Navigator.pop(
         context,
         PickedPostPhoto(
-            bytes: bytes, location: loc, takenAt: asset.createDateTime),
+          bytes: bytes,
+          location: loc,
+          takenAt: asset.createDateTime,
+        ),
       );
     } catch (_) {
       if (mounted) setState(() => _busy = false);
@@ -95,8 +101,10 @@ class _PostGridScreenState extends State<PostGridScreen> {
   }
 
   Future<void> _openCamera() async {
-    final shot = await ImagePicker()
-        .pickImage(source: ImageSource.camera, maxWidth: 3000);
+    final shot = await ImagePicker().pickImage(
+      source: ImageSource.camera,
+      maxWidth: 3000,
+    );
     if (shot == null || !mounted) return;
     final bytes = await shot.readAsBytes();
     if (!mounted) return;
@@ -123,8 +131,10 @@ class _PostGridScreenState extends State<PostGridScreen> {
           child: Text(l.commonCancel, style: const TextStyle(fontSize: 16)),
         ),
         leadingWidth: 84,
-        title: Text(l.postNewPost,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+        title: Text(
+          l.postNewPost,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
         actions: [
           IconButton(
             onPressed: _busy ? null : _openCamera,
@@ -193,7 +203,11 @@ class _PostGridScreenState extends State<PostGridScreen> {
 }
 
 class _GridCell extends StatefulWidget {
-  const _GridCell({required this.asset, required this.cache, required this.onTap});
+  const _GridCell({
+    required this.asset,
+    required this.cache,
+    required this.onTap,
+  });
   final AssetEntity asset;
   final Map<String, Uint8List> cache;
   final VoidCallback onTap;
@@ -215,8 +229,9 @@ class _GridCellState extends State<_GridCell> {
       _bytes = cached;
       return;
     }
-    final b = await widget.asset
-        .thumbnailDataWithSize(const ThumbnailSize.square(220));
+    final b = await widget.asset.thumbnailDataWithSize(
+      const ThumbnailSize.square(220),
+    );
     if (b == null) return;
     widget.cache[widget.asset.id] = b;
     if (mounted) setState(() => _bytes = b);

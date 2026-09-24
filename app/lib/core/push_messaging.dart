@@ -29,12 +29,15 @@ Future<void> showWayloNotification(RemoteMessage message) async {
   if (title == null && body == null) return;
 
   final local = FlutterLocalNotificationsPlugin();
-  await local.initialize(const InitializationSettings(
-    android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-  ));
+  await local.initialize(
+    const InitializationSettings(
+      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+    ),
+  );
   await local
       .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
+        AndroidFlutterLocalNotificationsPlugin
+      >()
       ?.createNotificationChannel(_channel);
 
   await local.show(
@@ -115,12 +118,15 @@ class PushMessaging {
     final client = Supabase.instance.client;
     if (client.auth.currentUser == null) return;
     try {
-      await client.rpc('register_device_token', params: {
-        'p_token': token,
-        'p_platform': 'android',
-        // The recipient's app language, so the Edge Function localizes the push.
-        'p_language': LocaleController.instance.resolvedLanguageCode,
-      });
+      await client.rpc(
+        'register_device_token',
+        params: {
+          'p_token': token,
+          'p_platform': 'android',
+          // The recipient's app language, so the Edge Function localizes the push.
+          'p_language': LocaleController.instance.resolvedLanguageCode,
+        },
+      );
     } catch (e) {
       debugPrint('[push] token save failed: $e');
     }

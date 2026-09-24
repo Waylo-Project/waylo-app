@@ -41,7 +41,8 @@ class _FriendsViewState extends State<FriendsView> {
   List<FeedPoint>? _sheet;
 
   // Lets a tab switch ask the Recent panel to refetch (it manages its own feed).
-  final GlobalKey<_RecentPanelState> _recentKey = GlobalKey<_RecentPanelState>();
+  final GlobalKey<_RecentPanelState> _recentKey =
+      GlobalKey<_RecentPanelState>();
 
   /// Refresh the tab you switch to, so friends' new posts / requests show up
   /// without a manual pull. [silent] keeps the list on screen during the fetch.
@@ -160,13 +161,15 @@ class _FriendsViewState extends State<FriendsView> {
   /// Find moved off the segmented control onto the search icon: open it as a
   /// pushed screen.
   void _openFind() {
-    Navigator.of(context).push(MaterialPageRoute<void>(
-      builder: (_) => _FindScreen(
-        repo: _repo,
-        friendIds: {for (final f in _friends ?? const <UserSummary>[]) f.id},
-        onSent: () {}, // the "Add" button flips to "Sent" — no toast needed
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => _FindScreen(
+          repo: _repo,
+          friendIds: {for (final f in _friends ?? const <UserSummary>[]) f.id},
+          onSent: () {}, // the "Add" button flips to "Sent" — no toast needed
+        ),
       ),
-    ));
+    );
   }
 
   // ---- Friends ------------------------------------------------------------
@@ -176,10 +179,7 @@ class _FriendsViewState extends State<FriendsView> {
     final friends = _friends;
     if (friends == null) return const _Loading();
     if (friends.isEmpty) {
-      return _Empty(
-        onRefresh: _loadFriends,
-        text: l.friendsEmptyFriends,
-      );
+      return _Empty(onRefresh: _loadFriends, text: l.friendsEmptyFriends);
     }
     return RefreshIndicator(
       onRefresh: _loadFriends,
@@ -202,8 +202,11 @@ class _FriendsViewState extends State<FriendsView> {
       child: _Row(
         user: f,
         subtitle: _PassportStrip(codes: f.countryCodes),
-        trailing: Icon(Icons.chevron_right,
-            color: context.c.inkFaint, size: 24),
+        trailing: Icon(
+          Icons.chevron_right,
+          color: context.c.inkFaint,
+          size: 24,
+        ),
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute<void>(
             builder: (_) => FriendMapScreen(userId: f.id, username: f.username),
@@ -227,7 +230,9 @@ class _FriendsViewState extends State<FriendsView> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: const Color(0xFFD64545)),
+            style: TextButton.styleFrom(
+              foregroundColor: const Color(0xFFD64545),
+            ),
             child: Text(l.friendsRemove),
           ),
         ],
@@ -235,10 +240,12 @@ class _FriendsViewState extends State<FriendsView> {
     );
     if (ok != true) return false;
     // Optimistically drop the row, then call the server.
-    setState(() => _friends = [
-          for (final x in _friends ?? const <UserSummary>[])
-            if (x.id != f.id) x
-        ]);
+    setState(
+      () => _friends = [
+        for (final x in _friends ?? const <UserSummary>[])
+          if (x.id != f.id) x,
+      ],
+    );
     try {
       await _repo.removeFriend(f.id);
       // The row is already gone from the list — no confirmation toast.
@@ -280,10 +287,12 @@ class _FriendsViewState extends State<FriendsView> {
 
   Future<void> _respond(IncomingRequest r, bool accept) async {
     // Drop the card immediately; refresh the friends list on accept.
-    setState(() => _requests = [
-          for (final x in _requests ?? const <IncomingRequest>[])
-            if (x.requestId != r.requestId) x
-        ]);
+    setState(
+      () => _requests = [
+        for (final x in _requests ?? const <IncomingRequest>[])
+          if (x.requestId != r.requestId) x,
+      ],
+    );
     final l = AppLocalizations.of(context);
     try {
       await _repo.respond(r.requestId, accept: accept);
@@ -332,7 +341,12 @@ class _SegmentedControl extends StatelessWidget {
     );
   }
 
-  Widget _segment(BuildContext context, int index, String label, {int badge = 0}) {
+  Widget _segment(
+    BuildContext context,
+    int index,
+    String label, {
+    int badge = 0,
+  }) {
     final active = selected == index;
     return Expanded(
       child: GestureDetector(
@@ -420,7 +434,11 @@ class _RequestCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: context.c.hairline),
         boxShadow: const [
-          BoxShadow(color: Color(0x0F000000), blurRadius: 10, offset: Offset(0, 3)),
+          BoxShadow(
+            color: Color(0x0F000000),
+            blurRadius: 10,
+            offset: Offset(0, 3),
+          ),
         ],
       ),
       child: Column(
@@ -597,7 +615,9 @@ class _FindTabState extends State<_FindTab> {
       debugPrint('[friends] search failed: $e');
       if (mounted) {
         showErrorDialog(
-            context, AppLocalizations.of(context).friendsSearchFailed('$e'));
+          context,
+          AppLocalizations.of(context).friendsSearchFailed('$e'),
+        );
       }
     } finally {
       if (mounted) {
@@ -618,7 +638,9 @@ class _FindTabState extends State<_FindTab> {
       debugPrint('[friends] sendRequest failed: $e');
       if (mounted) {
         showErrorDialog(
-            context, AppLocalizations.of(context).friendsFailed('$e'));
+          context,
+          AppLocalizations.of(context).friendsFailed('$e'),
+        );
       }
     }
   }
@@ -639,9 +661,7 @@ class _FindTabState extends State<_FindTab> {
         foregroundColor: context.c.onPrimary,
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
       ),
       child: Text(l.friendsAdd),
@@ -758,12 +778,7 @@ class _StatusLabel extends StatelessWidget {
 /// A 72px friend/search row: avatar · handle (+ optional subtitle) · trailing,
 /// with a hairline divider inset to the text.
 class _Row extends StatelessWidget {
-  const _Row({
-    required this.user,
-    this.subtitle,
-    this.trailing,
-    this.onTap,
-  });
+  const _Row({required this.user, this.subtitle, this.trailing, this.onTap});
 
   final UserSummary user;
   final Widget? subtitle;
@@ -780,8 +795,7 @@ class _Row extends StatelessWidget {
           children: [
             Container(
               constraints: const BoxConstraints(minHeight: 72),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
                   _Avatar(user: user),
@@ -806,10 +820,7 @@ class _Row extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (trailing != null) ...[
-                    SizedBox(width: 8),
-                    trailing!,
-                  ],
+                  if (trailing != null) ...[SizedBox(width: 8), trailing!],
                 ],
               ),
             ),
@@ -834,13 +845,15 @@ class _Avatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final initial =
-        user.username.isNotEmpty ? user.username[0].toUpperCase() : '?';
+    final initial = user.username.isNotEmpty
+        ? user.username[0].toUpperCase()
+        : '?';
     return CircleAvatar(
       radius: 22,
       backgroundColor: context.c.primary.withValues(alpha: 0.22),
-      foregroundImage:
-          user.avatarUrl != null ? NetworkImage(user.avatarUrl!) : null,
+      foregroundImage: user.avatarUrl != null
+          ? NetworkImage(user.avatarUrl!)
+          : null,
       child: Text(
         initial,
         style: TextStyle(
@@ -939,7 +952,11 @@ class _RemoveBackground extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.person_remove_outlined, color: Colors.white, size: 20),
+          const Icon(
+            Icons.person_remove_outlined,
+            color: Colors.white,
+            size: 20,
+          ),
           const SizedBox(width: 8),
           Text(
             AppLocalizations.of(context).friendsRemove,
@@ -1043,7 +1060,9 @@ class _FindScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context).friendsFindTitle)),
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context).friendsFindTitle),
+      ),
       body: SafeArea(
         child: _FindTab(repo: repo, friendIds: friendIds, onSent: onSent),
       ),
@@ -1086,13 +1105,16 @@ class _RecentPanelState extends State<_RecentPanel> {
   }
 
   void _loadRecent() {
-    _feed.load().then((r) {
-      if (!mounted) return;
-      setState(() => _recent = r);
-      _flashPill();
-    }).catchError((_) {
-      if (mounted) setState(() => _recent = const <RecentPoint>[]);
-    });
+    _feed
+        .load()
+        .then((r) {
+          if (!mounted) return;
+          setState(() => _recent = r);
+          _flashPill();
+        })
+        .catchError((_) {
+          if (mounted) setState(() => _recent = const <RecentPoint>[]);
+        });
   }
 
   /// Refetch the recent feed (called when the Recent tab is reselected): drop
@@ -1124,8 +1146,9 @@ class _RecentPanelState extends State<_RecentPanel> {
   Widget build(BuildContext context) {
     final recent = _recent;
     final posts = recent?.length ?? 0;
-    final friends =
-        recent == null ? 0 : recent.map((p) => p.ownerId).toSet().length;
+    final friends = recent == null
+        ? 0
+        : recent.map((p) => p.ownerId).toSet().length;
     final topInset = MediaQuery.of(context).padding.top;
 
     return Stack(
@@ -1185,7 +1208,11 @@ class _SummaryPill extends StatelessWidget {
         color: context.c.ink,
         borderRadius: BorderRadius.circular(22),
         boxShadow: const [
-          BoxShadow(color: Color(0x26000000), blurRadius: 10, offset: Offset(0, 3)),
+          BoxShadow(
+            color: Color(0x26000000),
+            blurRadius: 10,
+            offset: Offset(0, 3),
+          ),
         ],
       ),
       child: Row(
@@ -1200,18 +1227,20 @@ class _SummaryPill extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Builder(builder: (context) {
-            final l = AppLocalizations.of(context);
-            return Text(
-              '${l.recentLast24h} · ${l.recentPostsCount(posts)} · '
-              '${l.recentFriendsCount(friends)}',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 13.5,
-                fontWeight: FontWeight.w600,
-              ),
-            );
-          }),
+          Builder(
+            builder: (context) {
+              final l = AppLocalizations.of(context);
+              return Text(
+                '${l.recentLast24h} · ${l.recentPostsCount(posts)} · '
+                '${l.recentFriendsCount(friends)}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -1309,9 +1338,12 @@ class _JustInCardState extends State<_JustInCard> {
   @override
   void initState() {
     super.initState();
-    _feed.thumbnail(widget.point.imagePath).then((b) {
-      if (mounted) setState(() => _bytes = b);
-    }).catchError((_) {});
+    _feed
+        .thumbnail(widget.point.imagePath)
+        .then((b) {
+          if (mounted) setState(() => _bytes = b);
+        })
+        .catchError((_) {});
     reversePlaceLabel(widget.point.location).then((l) {
       if (mounted) setState(() => _label = l);
     });
@@ -1334,7 +1366,10 @@ class _JustInCardState extends State<_JustInCard> {
           border: Border.all(color: context.c.hairline),
           boxShadow: const [
             BoxShadow(
-                color: Color(0x14000000), blurRadius: 10, offset: Offset(0, 3)),
+              color: Color(0x14000000),
+              blurRadius: 10,
+              offset: Offset(0, 3),
+            ),
           ],
         ),
         child: Column(
@@ -1342,8 +1377,9 @@ class _JustInCardState extends State<_JustInCard> {
           children: [
             // Photo with flag + time badge.
             ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
               child: SizedBox(
                 height: 92,
                 width: double.infinity,
@@ -1371,14 +1407,18 @@ class _JustInCardState extends State<_JustInCard> {
                       right: 8,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xCC15303B),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
                           _agoShort(
-                              AppLocalizations.of(context), widget.point.createdAt),
+                            AppLocalizations.of(context),
+                            widget.point.createdAt,
+                          ),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 11,
@@ -1424,10 +1464,7 @@ class _JustInCardState extends State<_JustInCard> {
                     sub.isEmpty ? ' ' : sub,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12.5,
-                      color: context.c.inkFaint,
-                    ),
+                    style: TextStyle(fontSize: 12.5, color: context.c.inkFaint),
                   ),
                 ],
               ),

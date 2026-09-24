@@ -5,8 +5,9 @@ import 'package:waylo/core/locale_controller.dart';
 void main() {
   final controller = LocaleController.instance;
 
-  testWidgets('resolvedLanguageCode covers every shipped locale',
-      (tester) async {
+  testWidgets('resolvedLanguageCode covers every shipped locale', (
+    tester,
+  ) async {
     addTearDown(() => controller.value = null);
     addTearDown(tester.platformDispatcher.clearLocalesTestValue);
 

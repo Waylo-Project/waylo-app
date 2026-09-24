@@ -77,8 +77,10 @@ class _PostPhotoPickerScreenState extends State<PostPhotoPickerScreen> {
   Future<void> _loadLibrary() async {
     final ps = await PhotoManager.requestPermissionExtend(
       requestOption: const PermissionRequestOption(
-        androidPermission:
-            AndroidPermission(type: RequestType.image, mediaLocation: true),
+        androidPermission: AndroidPermission(
+          type: RequestType.image,
+          mediaLocation: true,
+        ),
       ),
     );
     if (!ps.hasAccess) {
@@ -101,8 +103,7 @@ class _PostPhotoPickerScreenState extends State<PostPhotoPickerScreen> {
   Future<void> _selectAsset(AssetEntity asset) async {
     // Real GPS needs ACCESS_MEDIA_LOCATION (redacted otherwise).
     await Permission.accessMediaLocation.request();
-    final bytes =
-        await asset.thumbnailDataWithSize(ThumbnailSize(2048, 2048));
+    final bytes = await asset.thumbnailDataWithSize(ThumbnailSize(2048, 2048));
     if (bytes == null || !mounted) return;
     LatLng? loc;
     final ll = await asset.latlngAsync();
@@ -114,8 +115,10 @@ class _PostPhotoPickerScreenState extends State<PostPhotoPickerScreen> {
   }
 
   Future<void> _openCamera() async {
-    final shot = await ImagePicker()
-        .pickImage(source: ImageSource.camera, maxWidth: 3000);
+    final shot = await ImagePicker().pickImage(
+      source: ImageSource.camera,
+      maxWidth: 3000,
+    );
     if (shot == null) return;
     final bytes = await shot.readAsBytes();
     // A fresh shot has no embedded GPS; the details screen falls back to the
@@ -123,8 +126,11 @@ class _PostPhotoPickerScreenState extends State<PostPhotoPickerScreen> {
     await _setPhoto(bytes, location: null, takenAt: DateTime.now());
   }
 
-  Future<void> _setPhoto(Uint8List bytes,
-      {LatLng? location, DateTime? takenAt}) async {
+  Future<void> _setPhoto(
+    Uint8List bytes, {
+    LatLng? location,
+    DateTime? takenAt,
+  }) async {
     final codec = await ui.instantiateImageCodec(bytes);
     final frame = await codec.getNextFrame();
     if (!mounted) return;
@@ -211,8 +217,12 @@ class _PostPhotoPickerScreenState extends State<PostPhotoPickerScreen> {
     );
     var w = math.max(_minSize, crop.width + (c.contains('e') ? d.dx : -d.dx));
     var h = w / ar;
-    final maxW = c.contains('e') ? area.right - anchor.dx : anchor.dx - area.left;
-    final maxH = c.contains('s') ? area.bottom - anchor.dy : anchor.dy - area.top;
+    final maxW = c.contains('e')
+        ? area.right - anchor.dx
+        : anchor.dx - area.left;
+    final maxH = c.contains('s')
+        ? area.bottom - anchor.dy
+        : anchor.dy - area.top;
     if (w > maxW) {
       w = maxW;
       h = w / ar;
@@ -242,8 +252,12 @@ class _PostPhotoPickerScreenState extends State<PostPhotoPickerScreen> {
       final outW = srcRect.width.round().clamp(1, 4096);
       final outH = srcRect.height.round().clamp(1, 4096);
       final recorder = ui.PictureRecorder();
-      Canvas(recorder).drawImageRect(src, srcRect,
-          Rect.fromLTWH(0, 0, outW.toDouble(), outH.toDouble()), Paint());
+      Canvas(recorder).drawImageRect(
+        src,
+        srcRect,
+        Rect.fromLTWH(0, 0, outW.toDouble(), outH.toDouble()),
+        Paint(),
+      );
       final img = await recorder.endRecording().toImage(outW, outH);
       final data = await img.toByteData(format: ui.ImageByteFormat.png);
       img.dispose();
@@ -258,16 +272,18 @@ class _PostPhotoPickerScreenState extends State<PostPhotoPickerScreen> {
       if (mounted) {
         setState(() => _working = false);
         showErrorDialog(
-            context, AppLocalizations.of(context).avatarCouldNotCrop('$e'));
+          context,
+          AppLocalizations.of(context).avatarCouldNotCrop('$e'),
+        );
       }
     }
   }
 
   String _ratioLabel(AppLocalizations l, String name) => switch (name) {
-        'Original' => l.postRatioOriginal,
-        'Free' => l.postRatioFree,
-        _ => name,
-      };
+    'Original' => l.postRatioOriginal,
+    'Free' => l.postRatioFree,
+    _ => name,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -288,16 +304,22 @@ class _PostPhotoPickerScreenState extends State<PostPhotoPickerScreen> {
                   TextButton(
                     onPressed: _working ? null : () => Navigator.pop(context),
                     style: TextButton.styleFrom(
-                        foregroundColor: context.c.inkMuted),
-                    child: Text(l.commonCancel, style: const TextStyle(fontSize: 16)),
+                      foregroundColor: context.c.inkMuted,
+                    ),
+                    child: Text(
+                      l.commonCancel,
+                      style: const TextStyle(fontSize: 16),
+                    ),
                   ),
-                  Text(l.postNewPost,
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: context.c.ink)),
-                  _NextButton(
-                      onTap: (_working || _src == null) ? null : _next),
+                  Text(
+                    l.postNewPost,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: context.c.ink,
+                    ),
+                  ),
+                  _NextButton(onTap: (_working || _src == null) ? null : _next),
                 ],
               ),
             ),
@@ -318,7 +340,9 @@ class _PostPhotoPickerScreenState extends State<PostPhotoPickerScreen> {
         final src = _src;
         if (src != null && (_stage != stage || _imgRect == null)) {
           final imgRect = _containRect(
-              Size(src.width.toDouble(), src.height.toDouble()), stage);
+            Size(src.width.toDouble(), src.height.toDouble()),
+            stage,
+          );
           _stage = stage;
           _imgRect = imgRect;
           _crop = _fitRect(_ratioOf(_ratio), imgRect);
@@ -328,8 +352,10 @@ class _PostPhotoPickerScreenState extends State<PostPhotoPickerScreen> {
           return ColoredBox(
             color: _stageBg,
             child: Center(
-              child: Text(AppLocalizations.of(context).postPickPhoto,
-                  style: TextStyle(color: Colors.white38)),
+              child: Text(
+                AppLocalizations.of(context).postPickPhoto,
+                style: TextStyle(color: Colors.white38),
+              ),
             ),
           );
         }
@@ -340,8 +366,11 @@ class _PostPhotoPickerScreenState extends State<PostPhotoPickerScreen> {
             children: [
               Positioned.fromRect(
                 rect: imgRect,
-                child: Image.memory(bytes,
-                    fit: BoxFit.fill, gaplessPlayback: true),
+                child: Image.memory(
+                  bytes,
+                  fit: BoxFit.fill,
+                  gaplessPlayback: true,
+                ),
               ),
               Positioned.fill(
                 child: IgnorePointer(
@@ -373,13 +402,13 @@ class _PostPhotoPickerScreenState extends State<PostPhotoPickerScreen> {
                     left: e == 'w'
                         ? crop.left - handle / 2
                         : (e == 'e'
-                            ? crop.right - handle / 2
-                            : crop.center.dx - handle / 2),
+                              ? crop.right - handle / 2
+                              : crop.center.dx - handle / 2),
                     top: e == 'n'
                         ? crop.top - handle / 2
                         : (e == 's'
-                            ? crop.bottom - handle / 2
-                            : crop.center.dy - handle / 2),
+                              ? crop.bottom - handle / 2
+                              : crop.center.dy - handle / 2),
                     width: handle,
                     height: handle,
                     child: GestureDetector(
@@ -424,16 +453,18 @@ class _PostPhotoPickerScreenState extends State<PostPhotoPickerScreen> {
       padding: const EdgeInsets.fromLTRB(16, 0, 8, 6),
       child: Row(
         children: [
-          Text(AppLocalizations.of(context).postRecents,
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: context.c.ink)),
+          Text(
+            AppLocalizations.of(context).postRecents,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: context.c.ink,
+            ),
+          ),
           Spacer(),
           IconButton(
             onPressed: _working ? null : _openCamera,
-            icon: Icon(Icons.photo_camera_outlined,
-                color: context.c.inkMuted),
+            icon: Icon(Icons.photo_camera_outlined, color: context.c.inkMuted),
           ),
         ],
       ),
@@ -498,13 +529,16 @@ class _NextButton extends StatelessWidget {
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-          child: Text(AppLocalizations.of(context).commonNext,
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: onTap == null
-                      ? context.c.onPrimary.withValues(alpha: 0.4)
-                      : context.c.onPrimary)),
+          child: Text(
+            AppLocalizations.of(context).commonNext,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: onTap == null
+                  ? context.c.onPrimary.withValues(alpha: 0.4)
+                  : context.c.onPrimary,
+            ),
+          ),
         ),
       ),
     );
@@ -512,8 +546,11 @@ class _NextButton extends StatelessWidget {
 }
 
 class _RatioChip extends StatelessWidget {
-  const _RatioChip(
-      {required this.label, required this.selected, required this.onTap});
+  const _RatioChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
   final String label;
   final bool selected;
   final VoidCallback onTap;
@@ -527,11 +564,14 @@ class _RatioChip extends StatelessWidget {
           color: selected ? context.c.primary : context.c.fill,
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Text(label,
-            style: TextStyle(
-                fontSize: 14,
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                color: selected ? context.c.onPrimary : context.c.inkMuted)),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+            color: selected ? context.c.onPrimary : context.c.inkMuted,
+          ),
+        ),
       ),
     );
   }
@@ -566,8 +606,9 @@ class _GridCellState extends State<_GridCell> {
       _bytes = cached;
       return;
     }
-    final b = await widget.asset
-        .thumbnailDataWithSize(const ThumbnailSize.square(220));
+    final b = await widget.asset.thumbnailDataWithSize(
+      const ThumbnailSize.square(220),
+    );
     if (b == null) return;
     widget.cache[widget.asset.id] = b;
     if (mounted) setState(() => _bytes = b);
@@ -624,7 +665,9 @@ class _EdgeMark extends StatelessWidget {
         width: 18,
         height: 4,
         decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(2)),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(2),
+        ),
       ),
     );
   }

@@ -10,8 +10,9 @@ bool isValidPassword(String value) => passwordRegex.hasMatch(value);
 
 /// Email shape check, used by sign-up, sign-in, and the settings email change so
 /// they all accept the same thing (a local part, an @, a domain with a TLD).
-final RegExp emailRegex =
-    RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+final RegExp emailRegex = RegExp(
+  r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+);
 
 /// Whether [value] looks like a valid email address.
 bool isValidEmail(String value) => emailRegex.hasMatch(value);

@@ -22,7 +22,11 @@ class WelcomeScreen extends StatelessWidget {
             top: size.height * 0.2,
             left: 0,
             right: 0,
-            child: Image.asset('assets/logos/logo2.png', width: 150, height: 150),
+            child: Image.asset(
+              'assets/logos/logo2.png',
+              width: 150,
+              height: 150,
+            ),
           ),
           Positioned(
             top: size.height * 0.45,

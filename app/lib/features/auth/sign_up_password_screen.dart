@@ -28,8 +28,7 @@ class _SignUpPasswordScreenState extends State<SignUpPasswordScreen> {
     super.dispose();
   }
 
-  void _onChanged(String v) =>
-      setState(() => _valid = isValidPassword(v));
+  void _onChanged(String v) => setState(() => _valid = isValidPassword(v));
 
   void _next() {
     Navigator.of(context).push(

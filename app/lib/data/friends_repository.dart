@@ -19,11 +19,11 @@ class UserSummary {
   final List<String> countryCodes;
 
   UserSummary withCountries(List<String> codes) => UserSummary(
-        id: id,
-        username: username,
-        avatarUrl: avatarUrl,
-        countryCodes: codes,
-      );
+    id: id,
+    username: username,
+    avatarUrl: avatarUrl,
+    countryCodes: codes,
+  );
 }
 
 /// A pending friend request addressed to the current user, with mutual-friend
@@ -52,7 +52,7 @@ class IncomingRequest {
 /// `respond_to_friend_request`, `remove_friend`). RLS limits what's visible.
 class FriendsRepository {
   FriendsRepository([SupabaseClient? client])
-      : _client = client ?? Supabase.instance.client;
+    : _client = client ?? Supabase.instance.client;
 
   final SupabaseClient _client;
 
@@ -124,10 +124,10 @@ class FriendsRepository {
   }
 
   Future<void> respond(String requestId, {required bool accept}) async {
-    await _client.rpc('respond_to_friend_request', params: {
-      'p_request_id': requestId,
-      'p_accept': accept,
-    });
+    await _client.rpc(
+      'respond_to_friend_request',
+      params: {'p_request_id': requestId, 'p_accept': accept},
+    );
   }
 
   /// My accepted friends, each with their "passport strip" of country codes

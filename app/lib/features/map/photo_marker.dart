@@ -37,7 +37,12 @@ Future<Uint8List> composePhotoMarker(
   );
 
   // Photo, center-cropped to a square, clipped to the inner rounded rect.
-  final inner = ui.Rect.fromLTWH(border, border, s - 2 * border, s - 2 * border);
+  final inner = ui.Rect.fromLTWH(
+    border,
+    border,
+    s - 2 * border,
+    s - 2 * border,
+  );
   canvas.save();
   canvas.clipRRect(
     ui.RRect.fromRectAndRadius(inner, ui.Radius.circular(radius - border / 2)),
@@ -64,7 +69,12 @@ Future<Uint8List> composePhotoMarker(
   final badgeR = s * 0.17;
   // Cluster count badge, top-right corner.
   if (count > 1) {
-    _circleBadge(canvas, ui.Offset(s - badgeR - 2, badgeR + 2), badgeR, '$count');
+    _circleBadge(
+      canvas,
+      ui.Offset(s - badgeR - 2, badgeR + 2),
+      badgeR,
+      '$count',
+    );
   }
   // Friend badge (recent merged map), bottom-left corner: the author's avatar
   // photo when they have one, otherwise their initial.
@@ -72,7 +82,12 @@ Future<Uint8List> composePhotoMarker(
   if (avatarBytes != null) {
     await _avatarBadge(canvas, badgeCenter, badgeR, avatarBytes);
   } else if (initial != null && initial.isNotEmpty) {
-    _circleBadge(canvas, badgeCenter, badgeR, initial.substring(0, 1).toUpperCase());
+    _circleBadge(
+      canvas,
+      badgeCenter,
+      badgeR,
+      initial.substring(0, 1).toUpperCase(),
+    );
   }
 
   final image = await recorder.endRecording().toImage(size, size);
@@ -110,7 +125,11 @@ void _circleBadge(ui.Canvas canvas, ui.Offset center, double r, String text) {
 /// A circular avatar badge (the author's photo, center-cropped into the circle)
 /// with a white ring — same position/size as the initial badge.
 Future<void> _avatarBadge(
-    ui.Canvas canvas, ui.Offset center, double r, Uint8List avatarBytes) async {
+  ui.Canvas canvas,
+  ui.Offset center,
+  double r,
+  Uint8List avatarBytes,
+) async {
   final codec = await ui.instantiateImageCodec(avatarBytes);
   final frame = await codec.getNextFrame();
   final img = frame.image;
@@ -164,7 +183,12 @@ Future<Uint8List> composePlaceholderMarker({
     ),
     ui.Paint()..color = AppColors.primary,
   );
-  final inner = ui.Rect.fromLTWH(border, border, s - 2 * border, s - 2 * border);
+  final inner = ui.Rect.fromLTWH(
+    border,
+    border,
+    s - 2 * border,
+    s - 2 * border,
+  );
   canvas.drawRRect(
     ui.RRect.fromRectAndRadius(inner, ui.Radius.circular(radius - border / 2)),
     ui.Paint()..color = const Color(0xFFE3E3E3),
@@ -235,4 +259,3 @@ Future<Uint8List> composeFlagMarker(
   image.dispose();
   return bytes!.buffer.asUint8List();
 }
-

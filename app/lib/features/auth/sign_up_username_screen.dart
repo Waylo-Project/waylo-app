@@ -24,8 +24,9 @@ class _SignUpUsernameScreenState extends State<SignUpUsernameScreen> {
   // Lowercase only (a-z, 0-9, . _), 2-30 chars, no leading/trailing or repeated
   // punctuation. Uppercase is auto-lowercased by the input formatter below, so a
   // username is always stored lowercase (no "John" vs "john" collisions).
-  static final _usernameRegex =
-      RegExp(r"^[a-z0-9](?!.*\.\.)(?!.*__)[a-z0-9._]{0,28}[a-z0-9]$");
+  static final _usernameRegex = RegExp(
+    r"^[a-z0-9](?!.*\.\.)(?!.*__)[a-z0-9._]{0,28}[a-z0-9]$",
+  );
 
   final _controller = TextEditingController();
   final _repo = ProfileRepository();

@@ -166,21 +166,29 @@ class CommentThread {
 /// RLS) within a map bounding box. Backed by the `posts_in_view` RPC.
 class FeedRepository {
   FeedRepository([SupabaseClient? client])
-      : _client = client ?? Supabase.instance.client;
+    : _client = client ?? Supabase.instance.client;
 
   final SupabaseClient _client;
 
   /// [userId]'s posts whose location falls inside the box [sw]..[ne]. RLS still
   /// applies, so this only returns posts the caller may see (own, or a friend's).
   Future<List<FeedPoint>> pointsInView(
-      LatLng sw, LatLng ne, String userId) async {
-    final rows = await _client.rpc('posts_in_view', params: {
-      'min_lng': sw.longitude,
-      'min_lat': sw.latitude,
-      'max_lng': ne.longitude,
-      'max_lat': ne.latitude,
-      'p_user_id': userId,
-    }) as List<dynamic>;
+    LatLng sw,
+    LatLng ne,
+    String userId,
+  ) async {
+    final rows =
+        await _client.rpc(
+              'posts_in_view',
+              params: {
+                'min_lng': sw.longitude,
+                'min_lat': sw.latitude,
+                'max_lng': ne.longitude,
+                'max_lat': ne.latitude,
+                'p_user_id': userId,
+              },
+            )
+            as List<dynamic>;
 
     return rows
         .map((r) => FeedPoint.fromMap(r as Map<String, dynamic>))
@@ -191,11 +199,15 @@ class FeedRepository {
   /// a country flag is tapped, to frame the camera over the real posts instead
   /// of the geographic country center. Backed by `posts_for_country`.
   Future<List<LatLng>> postsForCountry(
-      String userId, String countryCode) async {
-    final rows = await _client.rpc('posts_for_country', params: {
-      'p_user_id': userId,
-      'p_country_code': countryCode,
-    }) as List<dynamic>;
+    String userId,
+    String countryCode,
+  ) async {
+    final rows =
+        await _client.rpc(
+              'posts_for_country',
+              params: {'p_user_id': userId, 'p_country_code': countryCode},
+            )
+            as List<dynamic>;
     return rows.map((r) {
       final m = r as Map<String, dynamic>;
       return LatLng((m['lat'] as num).toDouble(), (m['lng'] as num).toDouble());
@@ -207,19 +219,18 @@ class FeedRepository {
   /// (limit 1, no PostGIS), so it avoids the full-globe envelope that trips
   /// `posts_in_view`.
   Future<bool> hasVisiblePosts(String userId) async {
-    final rows = await _client
-        .from('posts')
-        .select('id')
-        .eq('user_id', userId)
-        .limit(1) as List<dynamic>;
+    final rows =
+        await _client.from('posts').select('id').eq('user_id', userId).limit(1)
+            as List<dynamic>;
     return rows.isNotEmpty;
   }
 
   /// Per-country aggregates for [userId]'s zoomed-out flag tier (no bounding box;
   /// a full-globe envelope trips PostGIS). Backed by `flags_for_user`.
   Future<List<FlagPoint>> flagsForUser(String userId) async {
-    final rows = await _client
-        .rpc('flags_for_user', params: {'p_user_id': userId}) as List<dynamic>;
+    final rows =
+        await _client.rpc('flags_for_user', params: {'p_user_id': userId})
+            as List<dynamic>;
     return rows
         .map((r) => FlagPoint.fromMap(r as Map<String, dynamic>))
         .toList();
@@ -238,7 +249,8 @@ class FeedRepository {
         // Disambiguate the embed: post_likes/post_comments also link posts to
         // profiles (many-to-many), so name the author FK explicitly.
         .select(
-            'caption, taken_at, place_label, profiles!posts_user_id_fkey(username, avatar_path)')
+          'caption, taken_at, place_label, profiles!posts_user_id_fkey(username, avatar_path)',
+        )
         .eq('id', postId)
         .maybeSingle();
     if (row == null) return const PostDetail();
@@ -257,9 +269,8 @@ class FeedRepository {
   }
 
   /// Public URL for an avatar (the `avatars` bucket is public). null-safe.
-  String? _avatarUrl(String? path) => path == null
-      ? null
-      : _client.storage.from('avatars').getPublicUrl(path);
+  String? _avatarUrl(String? path) =>
+      path == null ? null : _client.storage.from('avatars').getPublicUrl(path);
 
   /// Every accepted friend's posts from the last 24h, newest first, for the
   /// merged "Recent" map + "Just in" strip. Backed by the `recent_feed` RPC
@@ -274,11 +285,13 @@ class FeedRepository {
 
   /// All photo paths of a post, in carousel order (a post may hold several).
   Future<List<String>> postPhotos(String postId) async {
-    final rows = await _client
-        .from('post_photos')
-        .select('image_path')
-        .eq('post_id', postId)
-        .order('position') as List<dynamic>;
+    final rows =
+        await _client
+                .from('post_photos')
+                .select('image_path')
+                .eq('post_id', postId)
+                .order('position')
+            as List<dynamic>;
     return rows.map((r) => (r as Map)['image_path'] as String).toList();
   }
 
@@ -286,19 +299,22 @@ class FeedRepository {
   /// friend-scale row count makes a full fetch fine (no separate count call).
   Future<LikeSummary> likeSummary(String postId) async {
     final uid = _client.auth.currentUser?.id;
-    final rows = await _client
-        .from('post_likes')
-        .select('user_id, profiles(username, avatar_path)')
-        .eq('post_id', postId)
-        .order('created_at', ascending: false) as List<dynamic>;
+    final rows =
+        await _client
+                .from('post_likes')
+                .select('user_id, profiles(username, avatar_path)')
+                .eq('post_id', postId)
+                .order('created_at', ascending: false)
+            as List<dynamic>;
     final likers = [
       for (final r in rows)
         if ((r as Map)['profiles'] != null)
           Liker(
             userId: r['user_id'] as String,
             username: (r['profiles'] as Map)['username'] as String,
-            avatarUrl:
-                _avatarUrl((r['profiles'] as Map)['avatar_path'] as String?),
+            avatarUrl: _avatarUrl(
+              (r['profiles'] as Map)['avatar_path'] as String?,
+            ),
           ),
     ];
     return LikeSummary(
@@ -312,9 +328,10 @@ class FeedRepository {
   Future<void> setLike(String postId, bool liked) async {
     final uid = _client.auth.currentUser!.id;
     if (liked) {
-      await _client
-          .from('post_likes')
-          .upsert({'post_id': postId, 'user_id': uid});
+      await _client.from('post_likes').upsert({
+        'post_id': postId,
+        'user_id': uid,
+      });
     } else {
       await _client
           .from('post_likes')
@@ -328,19 +345,26 @@ class FeedRepository {
   /// and one-level replies come back in this flat list; [parentId] distinguishes
   /// them. The UI groups them into threads for display.
   Future<List<Comment>> comments(String postId) async {
-    final rows = await _client
-        .from('post_comments')
-        .select(
-            'id, user_id, body, created_at, parent_id, profiles(username, avatar_path)')
-        .eq('post_id', postId)
-        .order('created_at') as List<dynamic>;
+    final rows =
+        await _client
+                .from('post_comments')
+                .select(
+                  'id, user_id, body, created_at, parent_id, profiles(username, avatar_path)',
+                )
+                .eq('post_id', postId)
+                .order('created_at')
+            as List<dynamic>;
     return rows.map((r) => _comment(r as Map<String, dynamic>)).toList();
   }
 
   /// Post a comment (or a reply, when [parentId] is set) and return the saved
   /// row (so the UI can append it without a refetch). The DB trigger enforces
   /// one-level threading and same-post integrity.
-  Future<Comment> addComment(String postId, String body, {String? parentId}) async {
+  Future<Comment> addComment(
+    String postId,
+    String body, {
+    String? parentId,
+  }) async {
     final uid = _client.auth.currentUser!.id;
     final row = await _client
         .from('post_comments')
@@ -351,7 +375,8 @@ class FeedRepository {
           'parent_id': ?parentId,
         })
         .select(
-            'id, user_id, body, created_at, parent_id, profiles(username, avatar_path)')
+          'id, user_id, body, created_at, parent_id, profiles(username, avatar_path)',
+        )
         .single();
     return _comment(row);
   }
@@ -403,25 +428,30 @@ class FeedRepository {
     required String? countryCode,
     required String? placeLabel,
   }) async {
-    await _client.rpc('update_post', params: {
-      'p_post_id': postId,
-      'p_lng': location.longitude,
-      'p_lat': location.latitude,
-      'p_caption': (caption == null || caption.isEmpty) ? null : caption,
-      'p_taken_at': takenAt?.toIso8601String(),
-      'p_country_code': countryCode,
-      'p_place_label': placeLabel,
-    });
+    await _client.rpc(
+      'update_post',
+      params: {
+        'p_post_id': postId,
+        'p_lng': location.longitude,
+        'p_lat': location.latitude,
+        'p_caption': (caption == null || caption.isEmpty) ? null : caption,
+        'p_taken_at': takenAt?.toIso8601String(),
+        'p_country_code': countryCode,
+        'p_place_label': placeLabel,
+      },
+    );
   }
 
   /// Delete a post the caller owns: drop the row (FK cascades photos, likes,
   /// comments), then best-effort remove its Storage objects (originals +
   /// thumbs). RLS restricts the row delete to the owner.
   Future<void> deletePost(String postId) async {
-    final photoRows = await _client
-        .from('post_photos')
-        .select('image_path')
-        .eq('post_id', postId) as List<dynamic>;
+    final photoRows =
+        await _client
+                .from('post_photos')
+                .select('image_path')
+                .eq('post_id', postId)
+            as List<dynamic>;
     final paths = <String>[];
     for (final r in photoRows) {
       final p = (r as Map)['image_path'] as String;

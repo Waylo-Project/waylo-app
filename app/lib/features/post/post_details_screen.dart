@@ -44,10 +44,10 @@ class PostDetailsScreen extends StatefulWidget {
     required this.initialLocation,
     required LocationSource this.source,
     this.takenAt,
-  })  : editPostId = null,
-        photoImage = null,
-        initialCaption = null,
-        initialPlaceLabel = null;
+  }) : editPostId = null,
+       photoImage = null,
+       initialCaption = null,
+       initialPlaceLabel = null;
 
   /// Edit an existing post: the same map / date / caption UI, but seeded from
   /// the post and saving via [FeedRepository.updatePost] (returning an
@@ -60,8 +60,8 @@ class PostDetailsScreen extends StatefulWidget {
     this.takenAt,
     this.initialCaption,
     this.initialPlaceLabel,
-  })  : photo = null,
-        source = null;
+  }) : photo = null,
+       source = null;
 
   /// The picked file for a new post; null when editing (see [photoImage]).
   final File? photo;
@@ -129,7 +129,9 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.initialCaption != null) _captionCtl.text = widget.initialCaption!;
+    if (widget.initialCaption != null) {
+      _captionCtl.text = widget.initialCaption!;
+    }
     if (widget.initialPlaceLabel != null) {
       _placeCtl.text = widget.initialPlaceLabel!;
       _placeEdited = true;
@@ -157,7 +159,10 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
   Future<void> _reverseGeocode() async {
     final label = await reversePlaceLabel(_center);
     if (!mounted || _placeEdited) return;
-    final parts = [if (label.place != null) label.place!, if (label.country != null) label.country!];
+    final parts = [
+      if (label.place != null) label.place!,
+      if (label.country != null) label.country!,
+    ];
     if (parts.isNotEmpty) _placeCtl.text = parts.join(', ');
   }
 
@@ -235,14 +240,16 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
     );
     if (picked != null) {
       // Keep the original time-of-day; the user edits the date only.
-      setState(() => _date = DateTime(
-            picked.year,
-            picked.month,
-            picked.day,
-            _date.hour,
-            _date.minute,
-            _date.second,
-          ));
+      setState(
+        () => _date = DateTime(
+          picked.year,
+          picked.month,
+          picked.day,
+          _date.hour,
+          _date.minute,
+          _date.second,
+        ),
+      );
     }
   }
 
@@ -294,17 +301,21 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
         placeLabel: placeLabel,
       );
       if (!mounted) return;
-      Navigator.of(context).pop(EditPostResult(
-        location: _center,
-        takenAt: _date,
-        caption: caption.isEmpty ? null : caption,
-        placeLabel: placeLabel,
-      ));
+      Navigator.of(context).pop(
+        EditPostResult(
+          location: _center,
+          takenAt: _date,
+          caption: caption.isEmpty ? null : caption,
+          placeLabel: placeLabel,
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() => _saving = false);
       showErrorDialog(
-          context, AppLocalizations.of(context).photoCouldNotSave('$e'));
+        context,
+        AppLocalizations.of(context).photoCouldNotSave('$e'),
+      );
     }
   }
 
@@ -336,8 +347,10 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
-        title: Text(_isEdit ? l.photoEditPost : l.postDetailsTitle,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+        title: Text(
+          _isEdit ? l.photoEditPost : l.postDetailsTitle,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
       ),
       body: Column(
         children: [
@@ -350,8 +363,10 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                 _dateField(),
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
-                  child: Text(l.postTimeAutoNote,
-                      style: TextStyle(fontSize: 12.5, color: context.c.inkFaint)),
+                  child: Text(
+                    l.postTimeAutoNote,
+                    style: TextStyle(fontSize: 12.5, color: context.c.inkFaint),
+                  ),
                 ),
                 _captionField(),
                 _coordsExpander(),
@@ -379,157 +394,211 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
           child: SizedBox(
             height: 286,
             child: Stack(
-        children: [
-          Positioned.fill(
-            child: MapWidget(
-              viewport: _viewport,
-              onMapCreated: _onMapCreated,
-              onCameraChangeListener: _onCameraChanged,
-              onMapIdleListener: _onMapIdle,
-            ),
-          ),
-          // Fixed center pin (tip at the map center).
-          IgnorePointer(
-            child: Center(
-              child: Transform.translate(
-                offset: const Offset(0, -19),
-                child: Icon(Icons.location_on, size: 40, color: context.c.ink),
-              ),
-            ),
-          ),
-          // Search box + results (inline over the map).
-          Positioned(
-            top: 14,
-            left: 14,
-            right: 14,
-            child: Column(
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: context.c.surface,
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: const [
-                      BoxShadow(color: Color(0x24143B30), blurRadius: 18, offset: Offset(0, 6)),
-                    ],
+                Positioned.fill(
+                  child: MapWidget(
+                    viewport: _viewport,
+                    onMapCreated: _onMapCreated,
+                    onCameraChangeListener: _onCameraChanged,
+                    onMapIdleListener: _onMapIdle,
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  child: Row(
+                ),
+                // Fixed center pin (tip at the map center).
+                IgnorePointer(
+                  child: Center(
+                    child: Transform.translate(
+                      offset: const Offset(0, -19),
+                      child: Icon(
+                        Icons.location_on,
+                        size: 40,
+                        color: context.c.ink,
+                      ),
+                    ),
+                  ),
+                ),
+                // Search box + results (inline over the map).
+                Positioned(
+                  top: 14,
+                  left: 14,
+                  right: 14,
+                  child: Column(
                     children: [
-                      Icon(Icons.search, size: 20, color: context.c.inkFaint),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: TextField(
-                          controller: _searchCtl,
-                          onChanged: _onSearchChanged,
-                          textInputAction: TextInputAction.search,
-                          onSubmitted: _onSearchSubmitted,
-                          decoration: InputDecoration(
-                            isDense: true,
-                            border: InputBorder.none,
-                            hintText: AppLocalizations.of(context).postSearchPlace,
-                            contentPadding: const EdgeInsets.symmetric(vertical: 13),
-                          ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: context.c.surface,
+                          borderRadius: BorderRadius.circular(14),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color(0x24143B30),
+                              blurRadius: 18,
+                              offset: Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.search,
+                              size: 20,
+                              color: context.c.inkFaint,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: TextField(
+                                controller: _searchCtl,
+                                onChanged: _onSearchChanged,
+                                textInputAction: TextInputAction.search,
+                                onSubmitted: _onSearchSubmitted,
+                                decoration: InputDecoration(
+                                  isDense: true,
+                                  border: InputBorder.none,
+                                  hintText: AppLocalizations.of(
+                                    context,
+                                  ).postSearchPlace,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 13,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            if (_searching)
+                              const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                          ],
                         ),
                       ),
-                      if (_searching)
-                        const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                      if (_results.isNotEmpty)
+                        Container(
+                          margin: const EdgeInsets.only(top: 6),
+                          constraints: const BoxConstraints(maxHeight: 196),
+                          decoration: BoxDecoration(
+                            color: context.c.surface,
+                            borderRadius: BorderRadius.circular(14),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color(0x24143B30),
+                                blurRadius: 18,
+                                offset: Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                          child: ListView(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            children: [
+                              for (final r in _results)
+                                InkWell(
+                                  onTap: () => _pickResult(r),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 12,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.place_outlined,
+                                          size: 18,
+                                          color: context.c.inkFaint,
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            r.name,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: context.c.ink,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
                     ],
                   ),
                 ),
-                if (_results.isNotEmpty)
-                  Container(
-                    margin: const EdgeInsets.only(top: 6),
-                    constraints: const BoxConstraints(maxHeight: 196),
-                    decoration: BoxDecoration(
-                      color: context.c.surface,
-                      borderRadius: BorderRadius.circular(14),
-                      boxShadow: const [
-                        BoxShadow(color: Color(0x24143B30), blurRadius: 18, offset: Offset(0, 6)),
-                      ],
-                    ),
-                    child: ListView(
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      children: [
-                        for (final r in _results)
-                          InkWell(
-                            onTap: () => _pickResult(r),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.place_outlined, size: 18, color: context.c.inkFaint),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(r.name,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(fontSize: 14, color: context.c.ink)),
-                                  ),
-                                ],
+                // Source chip (new posts only; hidden when editing).
+                if (widget.source != null)
+                  Positioned(
+                    left: 14,
+                    bottom: 14,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 13,
+                        vertical: 7,
+                      ),
+                      decoration: BoxDecoration(
+                        color: context.c.surface.withValues(alpha: 0.94),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x1F143B30),
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: 7,
+                            height: 7,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: context.c.checkAccent,
+                                shape: BoxShape.circle,
                               ),
                             ),
                           ),
-                      ],
+                          const SizedBox(width: 7),
+                          Text(
+                            _sourceHint(AppLocalizations.of(context)),
+                            style: TextStyle(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w500,
+                              color: context.c.inkMuted,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-              ],
-            ),
-          ),
-          // Source chip (new posts only; hidden when editing).
-          if (widget.source != null)
-          Positioned(
-            left: 14,
-            bottom: 14,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
-              decoration: BoxDecoration(
-                color: context.c.surface.withValues(alpha: 0.94),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [
-                  BoxShadow(color: Color(0x1F143B30), blurRadius: 10, offset: Offset(0, 4)),
-                ],
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: 7,
-                    height: 7,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(color: context.c.checkAccent, shape: BoxShape.circle),
+                // Recenter to the starting location.
+                Positioned(
+                  right: 14,
+                  bottom: 14,
+                  child: Material(
+                    color: context.c.surface,
+                    shape: const CircleBorder(),
+                    elevation: 3,
+                    child: InkWell(
+                      customBorder: const CircleBorder(),
+                      onTap: () => _flyTo(widget.initialLocation),
+                      child: Padding(
+                        padding: EdgeInsets.all(11),
+                        child: Icon(
+                          Icons.my_location,
+                          size: 20,
+                          color: context.c.checkAccent,
+                        ),
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 7),
-                  Text(_sourceHint(AppLocalizations.of(context)),
-                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500, color: context.c.inkMuted)),
-                ],
-              ),
-            ),
-          ),
-          // Recenter to the starting location.
-          Positioned(
-            right: 14,
-            bottom: 14,
-            child: Material(
-              color: context.c.surface,
-              shape: const CircleBorder(),
-              elevation: 3,
-              child: InkWell(
-                customBorder: const CircleBorder(),
-                onTap: () => _flyTo(widget.initialLocation),
-                child: Padding(
-                  padding: EdgeInsets.all(11),
-                  child: Icon(Icons.my_location, size: 20, color: context.c.checkAccent),
                 ),
-              ),
-            ),
-          ),
-        ],
+              ],
             ),
           ),
         ),
@@ -538,10 +607,14 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
   }
 
   Widget _fieldLabel(String text) => Text(
-        text.toUpperCase(),
-        style: TextStyle(
-            fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.9, color: context.c.inkFaint),
-      );
+    text.toUpperCase(),
+    style: TextStyle(
+      fontSize: 11,
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0.9,
+      color: context.c.inkFaint,
+    ),
+  );
 
   Widget _placeField() {
     return Container(
@@ -581,7 +654,11 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                     contentPadding: EdgeInsets.zero,
                     hintText: AppLocalizations.of(context).postPlaceNameHint,
                   ),
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: context.c.ink),
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                    color: context.c.ink,
+                  ),
                 ),
               ],
             ),
@@ -610,12 +687,21 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                 children: [
                   _fieldLabel(l.postDateLabel),
                   const SizedBox(height: 3),
-                  Text(dateLabel,
-                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: context.c.ink)),
+                  Text(
+                    dateLabel,
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                      color: context.c.ink,
+                    ),
+                  ),
                 ],
               ),
             ),
-            Text(l.settingsEdit, style: TextStyle(fontSize: 12.5, color: context.c.caption)),
+            Text(
+              l.settingsEdit,
+              style: TextStyle(fontSize: 12.5, color: context.c.caption),
+            ),
             const SizedBox(width: 8),
             Icon(Icons.chevron_right, size: 20, color: context.c.chevron),
           ],
@@ -637,8 +723,10 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
             children: [
               _fieldLabel(AppLocalizations.of(context).postCaptionLabel),
               const SizedBox(width: 6),
-              Text(AppLocalizations.of(context).postCaptionOptional,
-                  style: TextStyle(fontSize: 11, color: context.c.chevron)),
+              Text(
+                AppLocalizations.of(context).postCaptionOptional,
+                style: TextStyle(fontSize: 11, color: context.c.chevron),
+              ),
             ],
           ),
           SizedBox(height: 6),
@@ -671,10 +759,21 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(l.postEnterCoordsManually,
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: context.c.inkMuted)),
-                Icon(_coordsOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                    size: 20, color: context.c.chevron),
+                Text(
+                  l.postEnterCoordsManually,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: context.c.inkMuted,
+                  ),
+                ),
+                Icon(
+                  _coordsOpen
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
+                  size: 20,
+                  color: context.c.chevron,
+                ),
               ],
             ),
           ),
@@ -709,10 +808,20 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(fontSize: 10, letterSpacing: 0.6, color: context.c.inkFaint)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              letterSpacing: 0.6,
+              color: context.c.inkFaint,
+            ),
+          ),
           TextField(
             controller: ctl,
-            keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
+            keyboardType: const TextInputType.numberWithOptions(
+              signed: true,
+              decimal: true,
+            ),
             onSubmitted: (_) => _applyTypedCoords(),
             decoration: InputDecoration(
               isDense: true,
@@ -750,16 +859,20 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                           width: 22,
                           height: 22,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2.4, color: context.c.onPrimary),
+                            strokeWidth: 2.4,
+                            color: context.c.onPrimary,
+                          ),
                         )
                       : Text(
                           _isEdit
                               ? AppLocalizations.of(context).commonSave
                               : AppLocalizations.of(context).postPost,
                           style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w700,
-                              color: context.c.onPrimary)),
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            color: context.c.onPrimary,
+                          ),
+                        ),
                 ),
               ),
             ),

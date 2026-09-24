@@ -23,8 +23,7 @@ class _SignUpEmailScreenState extends State<SignUpEmailScreen> {
     super.dispose();
   }
 
-  void _onChanged(String v) =>
-      setState(() => _valid = isValidEmail(v.trim()));
+  void _onChanged(String v) => setState(() => _valid = isValidEmail(v.trim()));
 
   void _next() {
     Navigator.of(context).push(

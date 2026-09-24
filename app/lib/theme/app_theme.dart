@@ -183,26 +183,26 @@ extension WayloColorsX on BuildContext {
 /// buttons / white filled inputs, matching the original look.
 class AppTheme {
   static ThemeData get light => ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primary,
-          brightness: Brightness.light,
-        ),
-        scaffoldBackgroundColor: Colors.white,
-        fontFamily: kFontFamily,
-        useMaterial3: true,
-        extensions: const [WayloColors.light],
-      );
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.primary,
+      brightness: Brightness.light,
+    ),
+    scaffoldBackgroundColor: Colors.white,
+    fontFamily: kFontFamily,
+    useMaterial3: true,
+    extensions: const [WayloColors.light],
+  );
 
   static ThemeData get dark => ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primary,
-          brightness: Brightness.dark,
-        ),
-        scaffoldBackgroundColor: WayloColors.dark.pageBackground,
-        fontFamily: kFontFamily,
-        useMaterial3: true,
-        extensions: const [WayloColors.dark],
-      );
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.primary,
+      brightness: Brightness.dark,
+    ),
+    scaffoldBackgroundColor: WayloColors.dark.pageBackground,
+    fontFamily: kFontFamily,
+    useMaterial3: true,
+    extensions: const [WayloColors.dark],
+  );
 }
 
 /// Shared button styles for the auth flow.
@@ -213,9 +213,7 @@ class AuthButtonStyles {
       backgroundColor: Colors.white,
       foregroundColor: Colors.black87,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(30),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       elevation: 0,
       shadowColor: Colors.transparent,
       fixedSize: Size(MediaQuery.of(context).size.width * 0.85, 52),

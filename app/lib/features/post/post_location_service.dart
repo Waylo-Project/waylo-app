@@ -86,7 +86,8 @@ class PostLocationService {
       return ratio.numerator / ratio.denominator;
     }
 
-    final degrees = asDouble(parts[0]) +
+    final degrees =
+        asDouble(parts[0]) +
         asDouble(parts[1]) / 60 +
         asDouble(parts[2]) / 3600;
 
@@ -98,8 +99,9 @@ class PostLocationService {
   /// Parses the EXIF datetime format "yyyy:MM:dd HH:mm:ss" (no timezone -> local).
   DateTime? _parseExifDate(String? raw) {
     if (raw == null || raw.isEmpty) return null;
-    final m = RegExp(r'^(\d{4}):(\d{2}):(\d{2})[ T](\d{2}):(\d{2}):(\d{2})')
-        .firstMatch(raw);
+    final m = RegExp(
+      r'^(\d{4}):(\d{2}):(\d{2})[ T](\d{2}):(\d{2}):(\d{2})',
+    ).firstMatch(raw);
     if (m == null) return null;
     return DateTime(
       int.parse(m[1]!),

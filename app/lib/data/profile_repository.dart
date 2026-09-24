@@ -45,7 +45,7 @@ class Profile {
 /// can only insert/update their own row, so we never pass a foreign user id.
 class ProfileRepository {
   ProfileRepository([SupabaseClient? client])
-      : _client = client ?? Supabase.instance.client;
+    : _client = client ?? Supabase.instance.client;
 
   final SupabaseClient _client;
 
@@ -53,8 +53,11 @@ class ProfileRepository {
   Future<Profile?> getMyProfile() async {
     final uid = _client.auth.currentUser?.id;
     if (uid == null) return null;
-    final data =
-        await _client.from('profiles').select().eq('id', uid).maybeSingle();
+    final data = await _client
+        .from('profiles')
+        .select()
+        .eq('id', uid)
+        .maybeSingle();
     if (data == null) return null;
     return Profile.fromMap(data);
   }
@@ -77,8 +80,11 @@ class ProfileRepository {
     if (birthDate != null) payload['birth_date'] = _dateOnly(birthDate);
 
     try {
-      final data =
-          await _client.from('profiles').insert(payload).select().single();
+      final data = await _client
+          .from('profiles')
+          .insert(payload)
+          .select()
+          .single();
       return Profile.fromMap(data);
     } on PostgrestException catch (e) {
       // 23505 = unique_violation (username already taken).
@@ -117,7 +123,9 @@ class ProfileRepository {
       quality: 85,
     );
     final path = '$uid/avatar_${DateTime.now().millisecondsSinceEpoch}.jpg';
-    await _client.storage.from('avatars').uploadBinary(
+    await _client.storage
+        .from('avatars')
+        .uploadBinary(
           path,
           jpeg,
           fileOptions: const FileOptions(contentType: 'image/jpeg'),

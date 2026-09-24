@@ -83,8 +83,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  String get _email =>
-      Supabase.instance.client.auth.currentUser?.email ?? '';
+  String get _email => Supabase.instance.client.auth.currentUser?.email ?? '';
 
   @override
   Widget build(BuildContext context) {
@@ -119,85 +118,93 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 22),
 
           _SectionLabel(l.settingsSectionProfile),
-          _SettingsCard(children: [
-            _SettingsRow(
-              icon: Icons.alternate_email,
-              label: l.settingsUsername,
-              value: '@$_username',
-              onTap: _editUsername,
-            ),
-            _SettingsRow(
-              icon: Icons.badge_outlined,
-              label: l.settingsDisplayName,
-              value: _profile?.displayName ?? '—',
-              onTap: _editDisplayName,
-            ),
-          ]),
+          _SettingsCard(
+            children: [
+              _SettingsRow(
+                icon: Icons.alternate_email,
+                label: l.settingsUsername,
+                value: '@$_username',
+                onTap: _editUsername,
+              ),
+              _SettingsRow(
+                icon: Icons.badge_outlined,
+                label: l.settingsDisplayName,
+                value: _profile?.displayName ?? '—',
+                onTap: _editDisplayName,
+              ),
+            ],
+          ),
           const SizedBox(height: 18),
 
           _SectionLabel(l.settingsSectionAccount),
-          _SettingsCard(children: [
-            _SettingsRow(
-              icon: Icons.mail_outline,
-              label: l.settingsEmail,
-              value: _email.isEmpty ? '—' : _email,
-              onTap: _editEmail,
-            ),
-            _SettingsRow(
-              icon: Icons.lock_outline,
-              label: l.settingsPassword,
-              value: l.settingsChange,
-              onTap: _editPassword,
-            ),
-          ]),
+          _SettingsCard(
+            children: [
+              _SettingsRow(
+                icon: Icons.mail_outline,
+                label: l.settingsEmail,
+                value: _email.isEmpty ? '—' : _email,
+                onTap: _editEmail,
+              ),
+              _SettingsRow(
+                icon: Icons.lock_outline,
+                label: l.settingsPassword,
+                value: l.settingsChange,
+                onTap: _editPassword,
+              ),
+            ],
+          ),
           const SizedBox(height: 18),
 
           _SectionLabel(l.settingsSectionPreferences),
-          _SettingsCard(children: [
-            _SettingsRow(
-              icon: Icons.language,
-              label: l.settingsLanguage,
-              value: _languageLabel(l),
-              onTap: _openLanguageSheet,
-            ),
-            _SettingsRow(
-              icon: Icons.brightness_6_outlined,
-              label: l.settingsAppearance,
-              value: _themeLabel(l),
-              onTap: _openThemeSheet,
-            ),
-            _SettingsRow(
-              icon: Icons.group_outlined,
-              label: l.settingsPhotoVisibility,
-              value: l.settingsFriendsOnly,
-              valuePrefix: Padding(
-                padding: const EdgeInsets.only(right: 4),
-                child: Icon(Icons.lock, size: 15, color: c.inkFaint),
+          _SettingsCard(
+            children: [
+              _SettingsRow(
+                icon: Icons.language,
+                label: l.settingsLanguage,
+                value: _languageLabel(l),
+                onTap: _openLanguageSheet,
               ),
-              onTap: _openVisibilitySheet,
-            ),
-          ]),
+              _SettingsRow(
+                icon: Icons.brightness_6_outlined,
+                label: l.settingsAppearance,
+                value: _themeLabel(l),
+                onTap: _openThemeSheet,
+              ),
+              _SettingsRow(
+                icon: Icons.group_outlined,
+                label: l.settingsPhotoVisibility,
+                value: l.settingsFriendsOnly,
+                valuePrefix: Padding(
+                  padding: const EdgeInsets.only(right: 4),
+                  child: Icon(Icons.lock, size: 15, color: c.inkFaint),
+                ),
+                onTap: _openVisibilitySheet,
+              ),
+            ],
+          ),
           const SizedBox(height: 18),
 
           _SectionLabel(l.settingsSectionAbout),
-          _SettingsCard(children: [
-            _SettingsRow(
-              icon: Icons.info_outline,
-              label: l.settingsVersion,
-              value: _version,
-              trailing: _Trailing.none,
-            ),
-            _SettingsRow(
-              icon: Icons.description_outlined,
-              label: l.settingsTermsOfService,
-              onTap: () => _openLegal(termsOfService),
-            ),
-            _SettingsRow(
-              icon: Icons.shield_outlined,
-              label: l.settingsPrivacyPolicy,
-              onTap: () => _openLegal(privacyPolicy),
-            ),
-          ]),
+          _SettingsCard(
+            children: [
+              _SettingsRow(
+                icon: Icons.info_outline,
+                label: l.settingsVersion,
+                value: _version,
+                trailing: _Trailing.none,
+              ),
+              _SettingsRow(
+                icon: Icons.description_outlined,
+                label: l.settingsTermsOfService,
+                onTap: () => _openLegal(termsOfService),
+              ),
+              _SettingsRow(
+                icon: Icons.shield_outlined,
+                label: l.settingsPrivacyPolicy,
+                onTap: () => _openLegal(privacyPolicy),
+              ),
+            ],
+          ),
           const SizedBox(height: 22),
 
           _DeleteCard(onTap: _openDeleteDialog),
@@ -223,9 +230,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// locale. [build] is `termsOfService` or `privacyPolicy` from legal_content.
   void _openLegal(LegalDocument Function(Locale) build) {
     final doc = build(Localizations.localeOf(context));
-    Navigator.of(context).push(MaterialPageRoute<void>(
-      builder: (_) => LegalScreen(document: doc),
-    ));
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => LegalScreen(document: doc)));
   }
 
   /// Profile photo action sheet: take / choose / remove, then a Cancel card.
@@ -266,7 +273,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         _pickAndCrop(ImageSource.camera);
                       },
                     ),
-                    Divider(height: 1, thickness: 1, indent: 56, color: c.hairline),
+                    Divider(
+                      height: 1,
+                      thickness: 1,
+                      indent: 56,
+                      color: c.hairline,
+                    ),
                     _SheetAction(
                       icon: Icons.photo_library,
                       label: l.settingsChooseFromGallery,
@@ -276,7 +288,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       },
                     ),
                     if ((_profile?.avatarPath) != null) ...[
-                      Divider(height: 1, thickness: 1, indent: 56, color: c.hairline),
+                      Divider(
+                        height: 1,
+                        thickness: 1,
+                        indent: 56,
+                        color: c.hairline,
+                      ),
                       _SheetAction(
                         icon: Icons.delete_outline,
                         label: l.settingsRemovePhoto,
@@ -652,8 +669,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     try {
       Uint8List? initial;
       if (source == ImageSource.camera) {
-        final shot =
-            await _picker.pickImage(source: ImageSource.camera, maxWidth: 2048);
+        final shot = await _picker.pickImage(
+          source: ImageSource.camera,
+          maxWidth: 2048,
+        );
         if (shot == null || !mounted) return;
         initial = await shot.readAsBytes();
         if (!mounted) return;
@@ -745,8 +764,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         if (v.isEmpty || v == _email) return _EditResult.dismiss;
         if (!isValidEmail(v)) return _EditResult.error(l.authInvalidEmail);
         try {
-          await Supabase.instance.client.auth
-              .updateUser(UserAttributes(email: v));
+          await Supabase.instance.client.auth.updateUser(
+            UserAttributes(email: v),
+          );
           if (!mounted) return _EditResult.dismiss;
           // The email does NOT change until the user clicks the confirmation
           // link sent to the new address, so we don't optimistically update the
@@ -775,8 +795,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           return _EditResult.error(l.settingsPasswordTooShort);
         }
         try {
-          await Supabase.instance.client.auth
-              .updateUser(UserAttributes(password: value));
+          await Supabase.instance.client.auth.updateUser(
+            UserAttributes(password: value),
+          );
           return _EditResult.ok;
         } catch (e) {
           _snack(l.settingsCouldNotUpdatePassword('$e'));
@@ -863,8 +884,9 @@ class _EditDialog extends StatefulWidget {
 }
 
 class _EditDialogState extends State<_EditDialog> {
-  late final TextEditingController _controller =
-      TextEditingController(text: widget.initial);
+  late final TextEditingController _controller = TextEditingController(
+    text: widget.initial,
+  );
   String? _error;
   bool _saving = false;
 
@@ -892,11 +914,9 @@ class _EditDialogState extends State<_EditDialog> {
   }
 
   OutlineInputBorder _border({Color? color}) => OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: color == null
-            ? BorderSide.none
-            : BorderSide(color: color),
-      );
+    borderRadius: BorderRadius.circular(12),
+    borderSide: color == null ? BorderSide.none : BorderSide(color: color),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -907,7 +927,10 @@ class _EditDialogState extends State<_EditDialog> {
       title: Text(
         widget.title,
         style: TextStyle(
-            fontSize: 17, fontWeight: FontWeight.w700, color: c.ink),
+          fontSize: 17,
+          fontWeight: FontWeight.w700,
+          color: c.ink,
+        ),
       ),
       content: TextField(
         controller: _controller,
@@ -935,8 +958,10 @@ class _EditDialogState extends State<_EditDialog> {
       actions: [
         TextButton(
           onPressed: _saving ? null : () => Navigator.pop(context),
-          child: Text(AppLocalizations.of(context).commonCancel,
-              style: TextStyle(color: c.inkMuted)),
+          child: Text(
+            AppLocalizations.of(context).commonCancel,
+            style: TextStyle(color: c.inkMuted),
+          ),
         ),
         TextButton(
           onPressed: _saving ? null : _submit,
@@ -949,10 +974,13 @@ class _EditDialogState extends State<_EditDialog> {
                     color: c.checkAccent,
                   ),
                 )
-              : Text(AppLocalizations.of(context).commonSave,
+              : Text(
+                  AppLocalizations.of(context).commonSave,
                   style: TextStyle(
-                      color: c.checkAccent,
-                      fontWeight: FontWeight.w700)),
+                    color: c.checkAccent,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
         ),
       ],
     );
@@ -1002,8 +1030,9 @@ class _ProfileHero extends StatelessWidget {
                   CircleAvatar(
                     radius: 32,
                     backgroundColor: c.primary.withValues(alpha: 0.24),
-                    foregroundImage:
-                        avatarUrl != null ? NetworkImage(avatarUrl!) : null,
+                    foregroundImage: avatarUrl != null
+                        ? NetworkImage(avatarUrl!)
+                        : null,
                     child: Text(
                       initial,
                       style: TextStyle(
@@ -1023,8 +1052,11 @@ class _ProfileHero extends StatelessWidget {
                         color: c.surface,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(Icons.photo_camera,
-                          size: 14, color: c.inkMuted),
+                      child: Icon(
+                        Icons.photo_camera,
+                        size: 14,
+                        color: c.inkMuted,
+                      ),
                     ),
                   ),
                 ],
@@ -1119,12 +1151,9 @@ class _SettingsCard extends StatelessWidget {
     final rows = <Widget>[];
     for (var i = 0; i < children.length; i++) {
       if (i > 0) {
-        rows.add(Divider(
-          height: 1,
-          thickness: 1,
-          indent: 60,
-          color: c.hairline,
-        ));
+        rows.add(
+          Divider(height: 1, thickness: 1, indent: 60, color: c.hairline),
+        );
       }
       rows.add(children[i]);
     }
@@ -1275,7 +1304,11 @@ class _FloatingCard extends StatelessWidget {
         color: context.c.surface,
         borderRadius: BorderRadius.circular(22),
         boxShadow: const [
-          BoxShadow(color: Color(0x1A000000), blurRadius: 24, offset: Offset(0, 8)),
+          BoxShadow(
+            color: Color(0x1A000000),
+            blurRadius: 24,
+            offset: Offset(0, 8),
+          ),
         ],
       ),
       child: child,
@@ -1311,8 +1344,9 @@ class _SheetAction extends StatelessWidget {
         constraints: const BoxConstraints(minHeight: 56),
         padding: const EdgeInsets.symmetric(horizontal: 18),
         child: Row(
-          mainAxisAlignment:
-              center ? MainAxisAlignment.center : MainAxisAlignment.start,
+          mainAxisAlignment: center
+              ? MainAxisAlignment.center
+              : MainAxisAlignment.start,
           children: [
             if (icon != null) ...[
               Icon(icon, size: 22, color: color),
@@ -1384,8 +1418,7 @@ class _LanguageOption extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            if (selected)
-              Icon(Icons.check, size: 22, color: c.checkAccent),
+            if (selected) Icon(Icons.check, size: 22, color: c.checkAccent),
           ],
         ),
       ),

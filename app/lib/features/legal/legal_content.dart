@@ -220,9 +220,7 @@ const _termsKo = LegalDocument(
       '본 약관은 수시로 변경될 수 있습니다. 중요한 변경이 있는 경우 앱 내에서 안내하며, '
           '변경 후에도 waylo를 계속 이용하면 변경된 약관에 동의하는 것으로 간주됩니다.',
     ]),
-    LegalSection('9. 문의', [
-      '본 약관에 대한 문의는 support@waylo.app 으로 연락해 주세요.',
-    ]),
+    LegalSection('9. 문의', ['본 약관에 대한 문의는 support@waylo.app 으로 연락해 주세요.']),
   ],
 );
 
@@ -277,8 +275,6 @@ const _privacyKo = LegalDocument(
       '본 처리방침은 수시로 변경될 수 있습니다. 중요한 변경이 있는 경우 앱 내에서 '
           '안내합니다.',
     ]),
-    LegalSection('10. 문의', [
-      '개인정보에 관한 문의는 support@waylo.app 으로 연락해 주세요.',
-    ]),
+    LegalSection('10. 문의', ['개인정보에 관한 문의는 support@waylo.app 으로 연락해 주세요.']),
   ],
 );

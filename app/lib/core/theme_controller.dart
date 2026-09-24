@@ -34,7 +34,10 @@ class ThemeController extends ValueNotifier<ThemeMode> {
     if (mode == ThemeMode.system) {
       await prefs.remove(_prefsKey);
     } else {
-      await prefs.setString(_prefsKey, mode == ThemeMode.dark ? 'dark' : 'light');
+      await prefs.setString(
+        _prefsKey,
+        mode == ThemeMode.dark ? 'dark' : 'light',
+      );
     }
   }
 }

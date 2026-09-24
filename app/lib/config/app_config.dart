@@ -9,7 +9,8 @@ class AppConfig {
 
   /// Supabase publishable (anon) key. Paste the value from
   /// Project Settings -> API Keys -> "Publishable key" (a.k.a. anon public).
-  static const String supabasePublishableKey = '<SUPABASE_PUBLISHABLE_KEY>';
+  static const String supabasePublishableKey =
+      '<SUPABASE_PUBLISHABLE_KEY>';
 
   /// True once the publishable key has been filled in.
   static bool get isSupabaseConfigured =>
