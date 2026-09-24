@@ -409,10 +409,6 @@
       "error": { "type": "String" }
     }
   },
-  "friendsRequestSent": "Request sent",
-  "@friendsRequestSent": {
-    "description": "Snackbar confirming a friend request was sent."
-  },
   "friendsEmptyFriends": "No friends yet.\nTap the search icon to find people.",
   "@friendsEmptyFriends": {
     "description": "Empty state for the friends list."
@@ -439,13 +435,6 @@
   "@friendsRemove": {
     "description": "Remove action: dialog button and the swipe-to-remove background label."
   },
-  "friendsRemoved": "Removed @{username}",
-  "@friendsRemoved": {
-    "description": "Snackbar confirming a friend was removed.",
-    "placeholders": {
-      "username": { "type": "String" }
-    }
-  },
   "friendsEmptyRequests": "No pending requests.",
   "@friendsEmptyRequests": {
     "description": "Empty state for the requests list."
@@ -461,17 +450,6 @@
   "friendsDecline": "Decline",
   "@friendsDecline": {
     "description": "Button to decline an incoming friend request."
-  },
-  "friendsAdded": "Added @{username}",
-  "@friendsAdded": {
-    "description": "Snackbar confirming a request was accepted.",
-    "placeholders": {
-      "username": { "type": "String" }
-    }
-  },
-  "friendsDeclined": "Declined",
-  "@friendsDeclined": {
-    "description": "Snackbar confirming a request was declined."
   },
   "friendsMutual": "{count} mutual",
   "@friendsMutual": {
@@ -584,14 +562,6 @@
   "postNewPost": "New post",
   "@postNewPost": {
     "description": "Title of the photo picker / first post step."
-  },
-  "postPickPhoto": "Pick a photo",
-  "@postPickPhoto": {
-    "description": "Placeholder shown in the crop stage before a photo is chosen."
-  },
-  "postRecents": "Recents",
-  "@postRecents": {
-    "description": "Header above the recent-photos library grid."
   },
   "postPhotoAccessOff": "Photo access is off.\nAllow access, or take a photo.",
   "@postPhotoAccessOff": {
@@ -709,25 +679,9 @@
   "@mapYou": {
     "description": "The 'You' menu button tooltip and the username fallback in that menu."
   },
-  "mapStyleLabel": "Map style",
-  "@mapStyleLabel": {
-    "description": "Menu item for map customization."
-  },
-  "mapComingSoon": "Coming soon",
-  "@mapComingSoon": {
-    "description": "Subtitle marking a not-yet-available menu item."
-  },
   "mapSignOut": "Sign out",
   "@mapSignOut": {
     "description": "Menu item that signs the user out."
-  },
-  "mapCustomizationComingSoon": "Map customization is coming soon.",
-  "@mapCustomizationComingSoon": {
-    "description": "Snackbar shown when tapping the not-yet-available map style item."
-  },
-  "mapPosted": "Posted!",
-  "@mapPosted": {
-    "description": "Snackbar confirming a post was created."
   },
   "mapCouldNotPost": "Could not post: {error}",
   "@mapCouldNotPost": {
@@ -844,10 +798,6 @@
     "placeholders": {
       "count": { "type": "int" }
     }
-  },
-  "mapEmptyOwn": "No photos yet — tap + to pin your first one.",
-  "@mapEmptyOwn": {
-    "description": "Empty-state hint on your own map when you have no posts."
   },
   "mapEmptyFriend": "@{username} hasn’t posted any photos yet.",
   "@mapEmptyFriend": {

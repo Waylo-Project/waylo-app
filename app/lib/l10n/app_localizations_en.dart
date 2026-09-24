@@ -316,9 +316,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get friendsRequestSent => 'Request sent';
-
-  @override
   String get friendsEmptyFriends =>
       'No friends yet.\nTap the search icon to find people.';
 
@@ -345,11 +342,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendsRemove => 'Remove';
 
   @override
-  String friendsRemoved(String username) {
-    return 'Removed @$username';
-  }
-
-  @override
   String get friendsEmptyRequests => 'No pending requests.';
 
   @override
@@ -360,14 +352,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get friendsDecline => 'Decline';
-
-  @override
-  String friendsAdded(String username) {
-    return 'Added @$username';
-  }
-
-  @override
-  String get friendsDeclined => 'Declined';
 
   @override
   String friendsMutual(int count) {
@@ -469,12 +453,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get postNewPost => 'New post';
 
   @override
-  String get postPickPhoto => 'Pick a photo';
-
-  @override
-  String get postRecents => 'Recents';
-
-  @override
   String get postPhotoAccessOff =>
       'Photo access is off.\nAllow access, or take a photo.';
 
@@ -562,19 +540,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mapYou => 'You';
 
   @override
-  String get mapStyleLabel => 'Map style';
-
-  @override
-  String get mapComingSoon => 'Coming soon';
-
-  @override
   String get mapSignOut => 'Sign out';
-
-  @override
-  String get mapCustomizationComingSoon => 'Map customization is coming soon.';
-
-  @override
-  String get mapPosted => 'Posted!';
 
   @override
   String mapCouldNotPost(String error) {
@@ -665,9 +631,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String timeWeeksShort(int count) {
     return '${count}w';
   }
-
-  @override
-  String get mapEmptyOwn => 'No photos yet — tap + to pin your first one.';
 
   @override
   String mapEmptyFriend(String username) {

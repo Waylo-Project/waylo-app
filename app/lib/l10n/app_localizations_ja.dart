@@ -310,9 +310,6 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get friendsRequestSent => 'リクエストを送信しました';
-
-  @override
   String get friendsEmptyFriends => 'まだ友だちがいません。\n検索アイコンをタップして友だちを探しましょう。';
 
   @override
@@ -337,11 +334,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get friendsRemove => '削除';
 
   @override
-  String friendsRemoved(String username) {
-    return '@$username さんを削除しました';
-  }
-
-  @override
   String get friendsEmptyRequests => '保留中のリクエストはありません。';
 
   @override
@@ -352,14 +344,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get friendsDecline => '拒否';
-
-  @override
-  String friendsAdded(String username) {
-    return '@$username さんを追加しました';
-  }
-
-  @override
-  String get friendsDeclined => '拒否しました';
 
   @override
   String friendsMutual(int count) {
@@ -458,12 +442,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get postNewPost => '新規投稿';
 
   @override
-  String get postPickPhoto => '写真を選択';
-
-  @override
-  String get postRecents => '最近の項目';
-
-  @override
   String get postPhotoAccessOff => '写真へのアクセスがオフです。\nアクセスを許可するか、写真を撮影してください。';
 
   @override
@@ -550,19 +528,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get mapYou => 'あなた';
 
   @override
-  String get mapStyleLabel => '地図スタイル';
-
-  @override
-  String get mapComingSoon => '近日公開';
-
-  @override
   String get mapSignOut => 'ログアウト';
-
-  @override
-  String get mapCustomizationComingSoon => '地図のカスタマイズは近日公開予定です。';
-
-  @override
-  String get mapPosted => '投稿しました！';
 
   @override
   String mapCouldNotPost(String error) {
@@ -652,9 +618,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String timeWeeksShort(int count) {
     return '$count週';
   }
-
-  @override
-  String get mapEmptyOwn => 'まだ写真がありません — + をタップして最初の1枚を追加。';
 
   @override
   String mapEmptyFriend(String username) {

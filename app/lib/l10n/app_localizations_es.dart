@@ -316,9 +316,6 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get friendsRequestSent => 'Solicitud enviada';
-
-  @override
   String get friendsEmptyFriends =>
       'Aún no tienes amigos.\nToca la lupa para encontrar personas.';
 
@@ -345,11 +342,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get friendsRemove => 'Eliminar';
 
   @override
-  String friendsRemoved(String username) {
-    return 'Eliminaste a @$username';
-  }
-
-  @override
   String get friendsEmptyRequests => 'No hay solicitudes pendientes.';
 
   @override
@@ -360,14 +352,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get friendsDecline => 'Rechazar';
-
-  @override
-  String friendsAdded(String username) {
-    return 'Añadiste a @$username';
-  }
-
-  @override
-  String get friendsDeclined => 'Rechazada';
 
   @override
   String friendsMutual(int count) {
@@ -471,12 +455,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get postNewPost => 'Nueva publicación';
 
   @override
-  String get postPickPhoto => 'Elige una foto';
-
-  @override
-  String get postRecents => 'Recientes';
-
-  @override
   String get postPhotoAccessOff =>
       'El acceso a las fotos está desactivado.\nPermite el acceso o toma una foto.';
 
@@ -565,20 +543,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get mapYou => 'Tú';
 
   @override
-  String get mapStyleLabel => 'Estilo del mapa';
-
-  @override
-  String get mapComingSoon => 'Próximamente';
-
-  @override
   String get mapSignOut => 'Cerrar sesión';
-
-  @override
-  String get mapCustomizationComingSoon =>
-      'La personalización del mapa llegará pronto.';
-
-  @override
-  String get mapPosted => '¡Publicado!';
 
   @override
   String mapCouldNotPost(String error) {
@@ -669,9 +634,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String timeWeeksShort(int count) {
     return '$count sem';
   }
-
-  @override
-  String get mapEmptyOwn => 'Aún no hay fotos: toca + para poner la primera.';
 
   @override
   String mapEmptyFriend(String username) {

@@ -650,12 +650,6 @@ abstract class AppLocalizations {
   /// **'Failed: {error}'**
   String friendsFailed(String error);
 
-  /// Snackbar confirming a friend request was sent.
-  ///
-  /// In en, this message translates to:
-  /// **'Request sent'**
-  String get friendsRequestSent;
-
   /// Empty state for the friends list.
   ///
   /// In en, this message translates to:
@@ -686,12 +680,6 @@ abstract class AppLocalizations {
   /// **'Remove'**
   String get friendsRemove;
 
-  /// Snackbar confirming a friend was removed.
-  ///
-  /// In en, this message translates to:
-  /// **'Removed @{username}'**
-  String friendsRemoved(String username);
-
   /// Empty state for the requests list.
   ///
   /// In en, this message translates to:
@@ -715,18 +703,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Decline'**
   String get friendsDecline;
-
-  /// Snackbar confirming a request was accepted.
-  ///
-  /// In en, this message translates to:
-  /// **'Added @{username}'**
-  String friendsAdded(String username);
-
-  /// Snackbar confirming a request was declined.
-  ///
-  /// In en, this message translates to:
-  /// **'Declined'**
-  String get friendsDeclined;
 
   /// Count of mutual friends shown on a request card.
   ///
@@ -853,18 +829,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New post'**
   String get postNewPost;
-
-  /// Placeholder shown in the crop stage before a photo is chosen.
-  ///
-  /// In en, this message translates to:
-  /// **'Pick a photo'**
-  String get postPickPhoto;
-
-  /// Header above the recent-photos library grid.
-  ///
-  /// In en, this message translates to:
-  /// **'Recents'**
-  String get postRecents;
 
   /// Shown in the post picker grid when photo permission is denied.
   ///
@@ -1034,35 +998,11 @@ abstract class AppLocalizations {
   /// **'You'**
   String get mapYou;
 
-  /// Menu item for map customization.
-  ///
-  /// In en, this message translates to:
-  /// **'Map style'**
-  String get mapStyleLabel;
-
-  /// Subtitle marking a not-yet-available menu item.
-  ///
-  /// In en, this message translates to:
-  /// **'Coming soon'**
-  String get mapComingSoon;
-
   /// Menu item that signs the user out.
   ///
   /// In en, this message translates to:
   /// **'Sign out'**
   String get mapSignOut;
-
-  /// Snackbar shown when tapping the not-yet-available map style item.
-  ///
-  /// In en, this message translates to:
-  /// **'Map customization is coming soon.'**
-  String get mapCustomizationComingSoon;
-
-  /// Snackbar confirming a post was created.
-  ///
-  /// In en, this message translates to:
-  /// **'Posted!'**
-  String get mapPosted;
 
   /// Snackbar when creating a post fails.
   ///
@@ -1195,12 +1135,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count}w'**
   String timeWeeksShort(int count);
-
-  /// Empty-state hint on your own map when you have no posts.
-  ///
-  /// In en, this message translates to:
-  /// **'No photos yet — tap + to pin your first one.'**
-  String get mapEmptyOwn;
 
   /// Empty-state hint on a friend's map when they have no posts.
   ///

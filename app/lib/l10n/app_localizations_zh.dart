@@ -308,9 +308,6 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get friendsRequestSent => '请求已发送';
-
-  @override
   String get friendsEmptyFriends => '还没有好友。\n点击搜索图标查找他人。';
 
   @override
@@ -335,11 +332,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get friendsRemove => '删除';
 
   @override
-  String friendsRemoved(String username) {
-    return '已删除 @$username';
-  }
-
-  @override
   String get friendsEmptyRequests => '没有待处理的请求。';
 
   @override
@@ -350,14 +342,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get friendsDecline => '拒绝';
-
-  @override
-  String friendsAdded(String username) {
-    return '已添加 @$username';
-  }
-
-  @override
-  String get friendsDeclined => '已拒绝';
 
   @override
   String friendsMutual(int count) {
@@ -456,12 +440,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get postNewPost => '新帖子';
 
   @override
-  String get postPickPhoto => '选择照片';
-
-  @override
-  String get postRecents => '最近';
-
-  @override
   String get postPhotoAccessOff => '照片访问已关闭。\n请允许访问，或拍摄照片。';
 
   @override
@@ -548,19 +526,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mapYou => '你';
 
   @override
-  String get mapStyleLabel => '地图样式';
-
-  @override
-  String get mapComingSoon => '即将推出';
-
-  @override
   String get mapSignOut => '退出登录';
-
-  @override
-  String get mapCustomizationComingSoon => '地图自定义即将推出。';
-
-  @override
-  String get mapPosted => '已发布！';
 
   @override
   String mapCouldNotPost(String error) {
@@ -650,9 +616,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String timeWeeksShort(int count) {
     return '$count周';
   }
-
-  @override
-  String get mapEmptyOwn => '还没有照片——点击 + 添加你的第一张。';
 
   @override
   String mapEmptyFriend(String username) {

@@ -309,9 +309,6 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get friendsRequestSent => '요청을 보냈습니다';
-
-  @override
   String get friendsEmptyFriends => '아직 친구가 없습니다.\n검색 아이콘을 눌러 친구를 찾아보세요.';
 
   @override
@@ -336,11 +333,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get friendsRemove => '삭제';
 
   @override
-  String friendsRemoved(String username) {
-    return '@$username 님을 삭제했습니다';
-  }
-
-  @override
   String get friendsEmptyRequests => '대기 중인 요청이 없습니다.';
 
   @override
@@ -351,14 +343,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get friendsDecline => '거절';
-
-  @override
-  String friendsAdded(String username) {
-    return '@$username 님을 추가했습니다';
-  }
-
-  @override
-  String get friendsDeclined => '거절함';
 
   @override
   String friendsMutual(int count) {
@@ -457,12 +441,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get postNewPost => '새 게시물';
 
   @override
-  String get postPickPhoto => '사진을 선택하세요';
-
-  @override
-  String get postRecents => '최근 항목';
-
-  @override
   String get postPhotoAccessOff => '사진 접근이 꺼져 있습니다.\n접근을 허용하거나 사진을 촬영하세요.';
 
   @override
@@ -549,19 +527,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get mapYou => '나';
 
   @override
-  String get mapStyleLabel => '지도 스타일';
-
-  @override
-  String get mapComingSoon => '곧 제공';
-
-  @override
   String get mapSignOut => '로그아웃';
-
-  @override
-  String get mapCustomizationComingSoon => '지도 꾸미기는 곧 제공될 예정입니다.';
-
-  @override
-  String get mapPosted => '게시되었습니다!';
 
   @override
   String mapCouldNotPost(String error) {
@@ -651,9 +617,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String timeWeeksShort(int count) {
     return '$count주';
   }
-
-  @override
-  String get mapEmptyOwn => '아직 사진이 없어요 — 위 + 로 첫 사진을 올려보세요.';
 
   @override
   String mapEmptyFriend(String username) {
