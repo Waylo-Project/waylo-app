@@ -31,23 +31,17 @@ class FeedPoint {
   }
 }
 
-/// One country's flag marker on the zoomed-out map: how many visible posts are
-/// in that country and where to place the flag (centroid of those posts).
+/// One country's flag marker on the zoomed-out map: a country with visible posts
+/// and a fallback spot for its flag (the centroid of those posts).
 class FlagPoint {
-  const FlagPoint({
-    required this.countryCode,
-    required this.count,
-    required this.location,
-  });
+  const FlagPoint({required this.countryCode, required this.location});
 
   final String countryCode; // ISO alpha-2, lowercase (matches flag assets)
-  final int count;
   final LatLng location;
 
   factory FlagPoint.fromMap(Map<String, dynamic> m) {
     return FlagPoint(
       countryCode: m['country_code'] as String,
-      count: (m['post_count'] as num).toInt(),
       location: LatLng(
         (m['lat'] as num).toDouble(),
         (m['lng'] as num).toDouble(),

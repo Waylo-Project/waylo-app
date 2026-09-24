@@ -20,10 +20,10 @@ import 'avatar_picker_screen.dart';
 /// `docs/SETTINGS.md` and the design handoff. Colors read from the theme-aware
 /// [WayloColors] tokens (`context.c`), so the whole screen adapts to light/dark.
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key, this.profile});
+  const SettingsScreen({super.key, required this.profile});
 
-  /// The signed-in user's profile (null in the unconfigured/dev path).
-  final Profile? profile;
+  /// The signed-in user's profile.
+  final Profile profile;
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -34,7 +34,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final ImagePicker _picker = ImagePicker();
 
   // Mutable copy so edits reflect immediately.
-  late Profile? _profile = widget.profile;
+  late Profile _profile = widget.profile;
 
   // "1.0.0 (1)" — the built app's version + build number (from pubspec);
   // null until read.
@@ -50,7 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
-  String get _username => _profile?.username ?? 'you';
+  String get _username => _profile.username;
 
   /// The display label for the current language selection: an explicit choice,
   /// or "System default" when following the device locale.
@@ -110,9 +110,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         padding: const EdgeInsets.fromLTRB(16, 18, 16, 44),
         children: [
           _ProfileHero(
-            displayName: _profile?.displayName ?? _username,
+            displayName: _profile.displayName ?? _username,
             username: _username,
-            avatarUrl: _profile?.avatarUrl,
+            avatarUrl: _profile.avatarUrl,
             onEdit: _openProfilePhotoSheet,
           ),
           const SizedBox(height: 22),
@@ -129,7 +129,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _SettingsRow(
                 icon: Icons.badge_outlined,
                 label: l.settingsDisplayName,
-                value: _profile?.displayName ?? '—',
+                value: _profile.displayName ?? '—',
                 onTap: _editDisplayName,
               ),
             ],
@@ -287,7 +287,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         _pickAndCrop(ImageSource.gallery);
                       },
                     ),
-                    if ((_profile?.avatarPath) != null) ...[
+                    if (_profile.avatarPath != null) ...[
                       Divider(
                         height: 1,
                         thickness: 1,
@@ -709,13 +709,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final l = AppLocalizations.of(context);
     await _promptEdit(
       title: l.settingsUsername,
-      initial: _profile?.username ?? '',
+      initial: _profile.username,
       hint: l.settingsUsernameHint,
       onSubmit: (raw) async {
         final v = raw.trim();
         // Field-level validation stays in the dialog (inline, not a snackbar).
         if (v.isEmpty) return _EditResult.error(l.settingsEnterUsername);
-        if (v == _profile?.username) return _EditResult.dismiss;
+        if (v == _profile.username) return _EditResult.dismiss;
         try {
           final updated = await _repo.updateUsername(v);
           if (!mounted) return _EditResult.dismiss;
@@ -736,7 +736,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final l = AppLocalizations.of(context);
     await _promptEdit(
       title: l.settingsDisplayName,
-      initial: _profile?.displayName ?? '',
+      initial: _profile.displayName ?? '',
       hint: l.settingsDisplayNameHint,
       onSubmit: (value) async {
         try {

@@ -200,10 +200,9 @@ Future<Uint8List> composePlaceholderMarker({
 }
 
 /// Composes a flag marker for the zoomed-out tier: the country flag on a white
-/// rounded card (flag aspect preserved), with a count badge when [count] > 1.
+/// rounded card (flag aspect preserved). Deliberately no post-count badge.
 Future<Uint8List> composeFlagMarker(
   Uint8List flagBytes, {
-  int count = 1,
   double cardHeight = 96,
   double pad = 8,
   double radius = 10,
@@ -250,9 +249,6 @@ Future<Uint8List> composeFlagMarker(
       ..style = ui.PaintingStyle.stroke
       ..strokeWidth = 1,
   );
-
-  // No count badge on flag markers — the owner finds the number unsightly. The
-  // [count] param is kept (callers still pass it) but is no longer drawn.
 
   final image = await recorder.endRecording().toImage(w, h);
   final bytes = await image.toByteData(format: ui.ImageByteFormat.png);

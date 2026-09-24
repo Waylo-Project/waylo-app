@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../config/app_config.dart';
 import '../../data/feed_repository.dart';
 import '../../data/profile_repository.dart';
 import '../../l10n/app_localizations.dart';
@@ -19,11 +17,10 @@ import 'photo_map_view.dart';
 /// the post (+) and the You button top-right, and a compact `Map | Friends` pill
 /// at the bottom swaps the body in place between the map and the friends view.
 class MapHomePage extends StatefulWidget {
-  const MapHomePage({super.key, this.profile});
+  const MapHomePage({super.key, required this.profile});
 
-  /// The signed-in user's profile, when available (null in the unconfigured /
-  /// no-auth path).
-  final Profile? profile;
+  /// The signed-in user's profile.
+  final Profile profile;
 
   @override
   State<MapHomePage> createState() => _MapHomePageState();
@@ -65,12 +62,7 @@ class _MapHomePageState extends State<MapHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (!AppConfig.isSupabaseConfigured) {
-      return const Scaffold(
-        body: Stack(children: [_BareMap(), _SetupBanner()]),
-      );
-    }
-    final uid = Supabase.instance.client.auth.currentUser!.id;
+    final uid = widget.profile.id;
 
     return Scaffold(
       body: Stack(
@@ -245,7 +237,7 @@ class _MapHomePageState extends State<MapHomePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                widget.profile?.username ?? l.mapYou,
+                widget.profile.username,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   color: context.c.ink,
@@ -289,8 +281,7 @@ class _MapHomePageState extends State<MapHomePage> {
   }
 }
 
-/// One row inside an anchored popup menu: leading icon + label (+ optional
-/// subtitle). Kept compact so the menu stays small.
+/// One row inside an anchored popup menu: leading icon + label.
 class _MenuRow extends StatelessWidget {
   const _MenuRow({required this.icon, required this.label});
 
@@ -304,59 +295,8 @@ class _MenuRow extends StatelessWidget {
       children: [
         Icon(icon, size: 20, color: context.c.inkMuted),
         const SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [Text(label, style: TextStyle(color: context.c.ink))],
-        ),
+        Text(label, style: TextStyle(color: context.c.ink)),
       ],
-    );
-  }
-}
-
-/// A plain globe map shown only in the unconfigured (no-auth) dev path.
-class _BareMap extends StatelessWidget {
-  const _BareMap();
-
-  @override
-  Widget build(BuildContext context) {
-    return MapWidget(
-      viewport: CameraViewportState(
-        center: Point(coordinates: Position(126.9780, 37.5665)),
-        zoom: 12,
-      ),
-      onMapCreated: (map) => map.style.setProjection(
-        StyleProjection(name: StyleProjectionName.globe),
-      ),
-    );
-  }
-}
-
-/// Shown until the Supabase anon key is filled in, so a misconfigured build is
-/// obvious instead of silently failing.
-class _SetupBanner extends StatelessWidget {
-  const _SetupBanner();
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      left: 0,
-      right: 0,
-      top: 0,
-      child: SafeArea(
-        child: Container(
-          margin: const EdgeInsets.all(12),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.amber.shade100,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: const Text(
-            'Supabase anon key not set. Fill AppConfig.supabaseAnonKey.',
-            style: TextStyle(fontWeight: FontWeight.w500),
-          ),
-        ),
-      ),
     );
   }
 }

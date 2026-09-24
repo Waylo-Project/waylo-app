@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 /// Brand colors, carried over from the original waylo design.
 class AppColors {
   static const Color primary = Color(0xFF97DCF1); // sky blue
-  static const Color secondary = Color(0xFFFFC107); // amber
-  static const Color background = Color(0xFFF5F5F5);
 
   // Ink scale (Hanken redesign). Sky-blue is reserved for action & selection
   // only; everything textual sits on this neutral scale over white.

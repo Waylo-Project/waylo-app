@@ -9,7 +9,6 @@ import 'core/locale_controller.dart';
 import 'core/push_messaging.dart';
 import 'core/theme_controller.dart';
 import 'features/auth/auth_gate.dart';
-import 'features/map/map_home_page.dart';
 import 'l10n/app_localizations.dart';
 import 'theme/app_theme.dart';
 
@@ -33,21 +32,19 @@ Future<void> main() async {
   await LocaleController.instance.load();
   await ThemeController.instance.load();
 
-  if (AppConfig.isSupabaseConfigured) {
-    await Supabase.initialize(
-      url: AppConfig.supabaseUrl,
-      publishableKey: AppConfig.supabasePublishableKey,
-    );
+  await Supabase.initialize(
+    url: AppConfig.supabaseUrl,
+    publishableKey: AppConfig.supabasePublishableKey,
+  );
 
-    // Register this device for push when signed in (now, and on later sign-ins).
-    final auth = Supabase.instance.client.auth;
-    if (auth.currentSession != null) PushMessaging.instance.register();
-    auth.onAuthStateChange.listen((data) {
-      if (data.event == AuthChangeEvent.signedIn) {
-        PushMessaging.instance.register();
-      }
-    });
-  }
+  // Register this device for push when signed in (now, and on later sign-ins).
+  final auth = Supabase.instance.client.auth;
+  if (auth.currentSession != null) PushMessaging.instance.register();
+  auth.onAuthStateChange.listen((data) {
+    if (data.event == AuthChangeEvent.signedIn) {
+      PushMessaging.instance.register();
+    }
+  });
 
   runApp(const WayloApp());
 }
@@ -73,10 +70,7 @@ class WayloApp extends StatelessWidget {
           locale: locale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          // If Supabase isn't configured, skip auth and show the map with a banner.
-          home: AppConfig.isSupabaseConfigured
-              ? const AuthGate()
-              : const MapHomePage(),
+          home: const AuthGate(),
         ),
       ),
     );

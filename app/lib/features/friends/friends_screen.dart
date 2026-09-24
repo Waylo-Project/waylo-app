@@ -166,7 +166,6 @@ class _FriendsViewState extends State<FriendsView> {
         builder: (_) => _FindScreen(
           repo: _repo,
           friendIds: {for (final f in _friends ?? const <UserSummary>[]) f.id},
-          onSent: () {}, // the "Add" button flips to "Sent" — no toast needed
         ),
       ),
     );
@@ -542,17 +541,12 @@ class _RequestCard extends StatelessWidget {
 
 /// Find people by username and send requests.
 class _FindTab extends StatefulWidget {
-  const _FindTab({
-    required this.repo,
-    required this.friendIds,
-    required this.onSent,
-  });
+  const _FindTab({required this.repo, required this.friendIds});
   final FriendsRepository repo;
 
   /// Ids of people I'm already friends with — their row shows a disabled
   /// "Friends" state instead of an "Add" button.
   final Set<String> friendIds;
-  final VoidCallback onSent;
 
   @override
   State<_FindTab> createState() => _FindTabState();
@@ -632,8 +626,7 @@ class _FindTabState extends State<_FindTab> {
   Future<void> _send(UserSummary u) async {
     try {
       await widget.repo.sendRequest(u.id);
-      setState(() => _sent.add(u.id));
-      widget.onSent();
+      if (mounted) setState(() => _sent.add(u.id));
     } catch (e) {
       debugPrint('[friends] sendRequest failed: $e');
       if (mounted) {
@@ -1048,14 +1041,9 @@ class _SearchButton extends StatelessWidget {
 
 /// Find people by username, on its own pushed screen.
 class _FindScreen extends StatelessWidget {
-  const _FindScreen({
-    required this.repo,
-    required this.friendIds,
-    required this.onSent,
-  });
+  const _FindScreen({required this.repo, required this.friendIds});
   final FriendsRepository repo;
   final Set<String> friendIds;
-  final VoidCallback onSent;
 
   @override
   Widget build(BuildContext context) {
@@ -1064,7 +1052,7 @@ class _FindScreen extends StatelessWidget {
         title: Text(AppLocalizations.of(context).friendsFindTitle),
       ),
       body: SafeArea(
-        child: _FindTab(repo: repo, friendIds: friendIds, onSent: onSent),
+        child: _FindTab(repo: repo, friendIds: friendIds),
       ),
     );
   }

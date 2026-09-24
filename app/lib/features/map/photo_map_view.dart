@@ -97,7 +97,7 @@ class PhotoMapViewState extends State<PhotoMapView> {
   // Annotations currently on the map, so each refresh diffs (add/remove changed
   // only) instead of clearing + recreating — which flickered.
   final Map<String, PointAnnotation> _shown = {}; // photos, by iconId
-  final Map<String, PointAnnotation> _shownFlags = {}; // flags, by `cc_count`
+  final Map<String, PointAnnotation> _shownFlags = {}; // flags, by country
   final Map<String, _MapMarker> _markerByAnnotation = {};
   // Annotation id -> country code, so a flag tap knows which country to frame.
   final Map<String, String> _flagCodeByAnnotation = {};
@@ -195,7 +195,6 @@ class PhotoMapViewState extends State<PhotoMapView> {
     _photoManager = await map.annotations.createPointAnnotationManager();
     _photoManager!.tapEvents(onTap: _onPhotoTap);
     _flagManager!.tapEvents(onTap: _onFlagTap);
-    if (widget.feed.fitOnLoad) await _fitToContent();
     if (widget.startAtMyLocation) _centerOnMyLocation();
     await _refreshPoints();
     await _evaluateContent();
@@ -249,55 +248,6 @@ class PhotoMapViewState extends State<PhotoMapView> {
     await _refreshPoints(force: true);
     await _evaluateContent();
     if (mounted) setState(() => _firstLoadDone = true);
-  }
-
-  /// Frame the camera over all of the feed's points (used by the recent map,
-  /// which has no fixed home location). Centroid + a span-based zoom — a robust
-  /// approximation that avoids the finicky cameraForCoordinateBounds API.
-  Future<void> _fitToContent() async {
-    final map = _map;
-    if (map == null) return;
-    final pts = await widget.feed.pointsInView(
-      const LatLng(-90, -180),
-      const LatLng(90, 180),
-    );
-    if (pts.isEmpty) return;
-    if (pts.length == 1) {
-      final l = pts.first.location;
-      await map.setCamera(
-        CameraOptions(
-          center: Point(coordinates: Position(l.longitude, l.latitude)),
-          zoom: 6,
-        ),
-      );
-      return;
-    }
-    var minLat = 90.0, maxLat = -90.0, minLng = 180.0, maxLng = -180.0;
-    for (final p in pts) {
-      final l = p.location;
-      minLat = math.min(minLat, l.latitude);
-      maxLat = math.max(maxLat, l.latitude);
-      minLng = math.min(minLng, l.longitude);
-      maxLng = math.max(maxLng, l.longitude);
-    }
-    final span = math.max(maxLat - minLat, maxLng - minLng);
-    final zoom = span > 60
-        ? 1.5
-        : span > 20
-        ? 2.5
-        : span > 5
-        ? 3.5
-        : span > 1
-        ? 5.0
-        : 8.0;
-    await map.setCamera(
-      CameraOptions(
-        center: Point(
-          coordinates: Position((minLng + maxLng) / 2, (minLat + maxLat) / 2),
-        ),
-        zoom: zoom,
-      ),
-    );
   }
 
   void _onPhotoTap(PointAnnotation a) {
@@ -586,8 +536,7 @@ class PhotoMapViewState extends State<PhotoMapView> {
     final mgr = _flagManager;
     if (mgr == null) return;
     final flags = await widget.feed.flags();
-    String keyOf(FlagPoint f) => '${f.countryCode}_${f.count}';
-    final desired = {for (final f in flags) keyOf(f): f};
+    final desired = {for (final f in flags) f.countryCode: f};
 
     final gone = [
       for (final e in _shownFlags.entries)
@@ -603,13 +552,13 @@ class PhotoMapViewState extends State<PhotoMapView> {
 
     final toAdd = [
       for (final f in flags)
-        if (!_shownFlags.containsKey(keyOf(f))) f,
+        if (!_shownFlags.containsKey(f.countryCode)) f,
     ];
     if (toAdd.isEmpty) return;
     await Future.wait(toAdd.map(_ensureFlagImage));
     final addable = [
       for (final f in toAdd)
-        if (_flagImageCache[keyOf(f)] != null) f,
+        if (_flagImageCache[f.countryCode] != null) f,
     ];
     // Place each flag at its country's center (geocoded), like the original
     // waylo. Falls back to the centroid of the user's posts in that country if
@@ -625,14 +574,14 @@ class PhotoMapViewState extends State<PhotoMapView> {
           geometry: Point(
             coordinates: Position(places[i].longitude, places[i].latitude),
           ),
-          image: _flagImageCache[keyOf(addable[i])],
+          image: _flagImageCache[addable[i].countryCode],
           iconSize: 1.0,
         ),
     ]);
     for (var i = 0; i < addable.length; i++) {
       final a = created[i];
       if (a != null) {
-        _shownFlags[keyOf(addable[i])] = a;
+        _shownFlags[addable[i].countryCode] = a;
         _flagCodeByAnnotation[a.id] = addable[i].countryCode;
       }
     }
@@ -655,13 +604,12 @@ class PhotoMapViewState extends State<PhotoMapView> {
   }
 
   Future<void> _ensureFlagImage(FlagPoint f) async {
-    final key = '${f.countryCode}_${f.count}';
-    if (_flagImageCache.containsKey(key)) return;
+    final code = f.countryCode;
+    if (_flagImageCache.containsKey(code)) return;
     try {
-      final data = await rootBundle.load('assets/flags/${f.countryCode}.png');
-      _flagImageCache[key] = await composeFlagMarker(
+      final data = await rootBundle.load('assets/flags/$code.png');
+      _flagImageCache[code] = await composeFlagMarker(
         data.buffer.asUint8List(),
-        count: f.count,
       );
     } catch (e) {
       debugPrint('[map] flag image failed for ${f.countryCode}: $e');
@@ -833,10 +781,6 @@ abstract class MapFeed {
   /// Whether to drop to the country-flag tier when zoomed out.
   bool get usesFlags;
 
-  /// Whether the view should frame the camera over its content on first load
-  /// (the recent map has no fixed home location).
-  bool get fitOnLoad;
-
   /// Whether this feed has any content at all (globally), to decide the
   /// empty-state hint. Called once on map open and after mutations.
   Future<bool> hasContent();
@@ -865,15 +809,13 @@ class UserMapFeed implements MapFeed {
   bool get usesFlags => true;
 
   @override
-  bool get fitOnLoad => false;
-
-  @override
   Future<bool> hasContent() => _repo.hasVisiblePosts(userId);
 }
 
 /// The merged "Recent" map: every accepted friend's posts from the last 24h on
-/// one map. Photo tier at all zooms (no flags); frames its content on load. The
-/// fetched list is cached so the host can also feed the "Just in" strip from it.
+/// one map. Photo tier at all zooms (no flags); opens on the globe like every
+/// other map. The fetched list is cached so the host can also feed the "Just in"
+/// strip from it.
 class RecentMapFeed implements MapFeed {
   RecentMapFeed([FeedRepository? repo]) : _repo = repo ?? FeedRepository();
 
@@ -898,10 +840,6 @@ class RecentMapFeed implements MapFeed {
 
   @override
   bool get usesFlags => false;
-
-  // Start zoomed out on the globe like every other map (no auto-fit to content).
-  @override
-  bool get fitOnLoad => false;
 
   @override
   Future<bool> hasContent() async => (await load()).isNotEmpty;
