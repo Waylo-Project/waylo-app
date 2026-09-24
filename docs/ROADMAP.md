@@ -24,7 +24,7 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done.
   picked up after the polish pass.
 - **Before running:** apply any not-yet-applied `supabase/migrations/` in the
   SQL Editor, and set `MAPBOX_DOWNLOADS_TOKEN` locally (see `../CLAUDE.md`
-  "Setting up on a new machine"). Latest migration: `per_user_map`.
+  "Setting up on a new machine"). Latest migration: `place_label`.
 - **Known design debt:** the photo sheet design is a first draft the owner
   isn't happy with — intentionally deferred to Phase 6, don't polish piecemeal.
 
@@ -102,7 +102,7 @@ Goal: a signed-in user can put one of their photos on the map.
 See `DESIGN.md` for the post-photo flow, marker design, and performance model.
 - [x] Pick/take a photo; capture its location: **photo GPS first, with a map-pin
       fine-tune**, device location as fallback. **Verified on device.**
-      - Gallery picks go through `wechat_assets_picker`/`photo_manager`, which
+      - Gallery picks go through `photo_manager`, which
         reads the asset's real GPS via `latlngAsync()`. `image_picker` returns a
         re-encoded copy with coordinates stripped (0/0), so it can't be used for
         gallery location — camera capture still uses `image_picker` (fresh shots
@@ -201,8 +201,9 @@ Goal: setlog-level clean.
         already had `_Loading` / `_Empty` / error snackbars; the gap was the map
         view, which showed a blank globe. `PhotoMapView` now asks the feed
         `hasContent()` on load and shows, over the globe: a subtle spinner while
-        loading, a tailored empty hint (own map → "tap + to pin your first";
-        friend → "{username} hasn't posted"; recent → "no photos in 24h"), or a
+        loading, a tailored empty hint (friend → "{username} hasn't posted";
+        recent → "no photos in 24h"; your own map shows the one-time post guide
+        instead), or a
         Retry overlay if the initial load throws (was a silent `debugPrint`).
         Empty state re-evaluated after post / delete. Strings: `mapEmpty*`,
         `mapLoadError` (+ existing `commonRetry`).
@@ -224,45 +225,48 @@ Goal: the app speaks the user's language. Stack: Flutter's official `gen-l10n`
 (ARB files under `app/lib/l10n/`, `app_en.arb` is the template / source of keys;
 `flutter_localizations` + `intl`). `AppLocalizations` is generated at build time
 and wired into `MaterialApp` in `main.dart`.
-- [x] Infra + extract all UI strings to ARB; Korean + English. Locale follows
-      the device (no `locale` set), English fallback. Dates via
-      `MaterialLocalizations.formatMediumDate` (no hardcoded month names).
-- [x] **Manual language switch**: Settings → Language offers System default /
-      English / 한국어, applied live and persisted. `LocaleController`
+- [x] Infra + extract all UI strings to ARB: English, Korean, Japanese,
+      Chinese (Simplified) and Spanish. Locale follows the device, English
+      fallback. Dates via `DateFormat.yMMMd` (locale-ordered, with the year).
+- [x] **Manual language switch**: Settings → Language offers System default +
+      the five languages, applied live and persisted. `LocaleController`
       (`ValueNotifier<Locale?>` in `lib/core/`, null = follow device) sits above
       `MaterialApp` and saves to `SharedPreferences`. (Per-device, not synced via
       `profile` — that would need a migration; revisit if cross-device is wanted.)
 - [x] **Localize geocoded place names**: marker/sheet country + place names come
       from Mapbox, not our ARB. `geocoding` now resolves the active UI language
-      (`_geoLanguage()`: explicit choice → device → English fallback, mirroring
-      MaterialApp) and passes Mapbox a `language=` param on the displayed-name
-      calls (`reversePlaceName`, `reversePlaceLabel`, `searchPlaces`); each also
-      takes an optional `language` override. `countryCenter` / `reverseCountryCode`
-      are unchanged (they read coords / ISO code, no displayed text).
+      (`LocaleController.resolvedLanguageCode`: explicit choice → first shipped
+      device language → English, mirroring MaterialApp) and passes Mapbox a
+      `language=` param on the displayed-name calls (`reversePlaceName`,
+      `reversePlaceLabel`, `searchPlaces`). Chinese is sent as `zh-Hans` (a bare
+      `zh` returns Traditional names). `countryCenter` / `reverseCountryCode`
+      read coords / ISO codes only, no displayed text.
 - Notes: gender values and crop-ratio keys ('Original'/'Free') stay canonical
   English internally — only their display is localized. Language names are shown
-  as endonyms ('English', '한국어'), not translated. The dev-only "Supabase anon
-  key not set" banner is intentionally left untranslated.
+  as endonyms ('English', '한국어'), not translated.
 
-## Phase 8 — Push notifications (Android first)  [planned 2026-06-29]
+## Phase 8 — Push notifications (Android first)  ✅ built (Android)
 Goal: notify a user of friend-relevant events even when the app is closed.
 Adopted by product decision (was OUT). Android/FCM first; **iOS deferred** (APNs
 needs an Apple Developer account + a Mac). Follows the "no middle tier" rule —
 sending lives in a Supabase Edge Function triggered by DB events.
 - **Events:** friend request received, friend request accepted, like/comment on
   your photo.
-- [ ] Firebase project + Android app (`com.waylo.waylo`); `google-services.json`
+- [x] Firebase project + Android app (`com.waylo.waylo`); `google-services.json`
       into `app/android/app/`, Google-services Gradle plugin wired.
-- [ ] Flutter: `firebase_core` + `firebase_messaging`; request `POST_NOTIFICATIONS`
-      (Android 13+); save the FCM token to a `device_tokens` table on sign-in;
-      handle foreground / tap-to-navigate.
-- [ ] Migration `device_tokens` (user_id, token, platform; RLS = own rows only).
-- [ ] Edge Function `send_push`: look up the recipient's tokens, call FCM HTTP
-      v1. Firebase **service-account key stored as an Edge Function secret** —
-      never in the app or repo (same rule as `service_role`).
-- [ ] DB triggers / webhooks on `friend_requests`, `friendships`, `post_likes`,
-      `post_comments` → call `send_push` (never notify the actor about their own
-      action). Each webhook sends an `x-webhook-secret` header equal to the
+- [x] Flutter: `firebase_core` + `firebase_messaging`; request `POST_NOTIFICATIONS`
+      (Android 13+); save the FCM token (+ app language) to `device_tokens` on
+      sign-in and on a language switch; draw foreground + background pushes
+      ourselves (`core/push_messaging.dart`).
+- [ ] Tap-to-navigate (open the post / friend request from a notification).
+- [x] Migrations `device_tokens` + `device_token_language` (RLS = own rows only).
+- [x] Edge Function `send_push`: look up the recipient's tokens, call FCM HTTP
+      v1, localized in en / ko / ja / zh / es. Firebase **service-account key
+      stored as an Edge Function secret** — never in the app or repo (same rule
+      as `service_role`).
+- [x] Database webhooks `push_friend_req` (`friend_requests` insert + update),
+      `push_like` (`post_likes` insert), `push_comment` (`post_comments` insert)
+      → call `send_push` (never notify the actor about their own action). Each webhook sends an `x-webhook-secret` header equal to the
       `WEBHOOK_SECRET` function secret; without it `send_push` returns 401.
       (Configured in the dashboard, not a migration — the secret can't be
       committed.)

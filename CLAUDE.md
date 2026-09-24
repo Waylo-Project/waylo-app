@@ -98,28 +98,46 @@ for a non-friend). If a screen shows a stranger's photo, that's a bug.
 waylo2/
   app/         Flutter app
   supabase/    migrations/  (schema, RLS, RPCs, storage — all applied to the shared project)
-  docs/        ROADMAP.md (status + plan), DESIGN.md (UI + marker model)
+               functions/send_push/  (Edge Function: FCM pushes, called by DB webhooks)
+  docs/        ROADMAP.md (status + plan), DESIGN.md (UI + marker model),
+               POST.md, SETTINGS.md (feature specs)
   CLAUDE.md    this file
 ```
 
 Code map (`app/lib/`):
 - `config/app_config.dart` — Supabase + Mapbox public keys.
-- `core/lat_lng.dart` — provider-agnostic coordinate type.
+- `core/` — app-wide pieces: `lat_lng` (provider-agnostic coordinate),
+  `locale_controller` / `theme_controller` (persisted language + light/dark),
+  `push_messaging` (FCM token + drawing notifications), `user_avatar`,
+  `photo_library` (library loading + thumbnail grid for the pickers),
+  `date_format`, `validators`, `error_dialog`.
 - `data/` — repositories: `profile_`, `post_` (upload + create_post),
-  `feed_` (map queries + thumbnails + post detail), `friends_`, `geocoding`
-  (reverse country/place, country center).
+  `feed_` (map queries, thumbnails, post detail, likes, comments, edit/delete),
+  `friends_`, `geocoding` (Mapbox reverse/forward lookups, country center).
 - `features/auth/` — sequential sign-up + sign-in + `AuthGate`.
 - `features/map/` — `map_home_page` (your map + chrome), `photo_map_view`
-  (the reusable per-user map: markers, clustering, flags, sheet),
+  (the reusable map: markers, clustering, flags; per-user or Recent feed),
   `friend_map_screen` (a friend's map), `photo_marker` (compose marker PNGs),
   `marker_cache` (disk cache).
-- `features/post/` — pick photo + EXIF/location + confirm.
-- `features/photo/photo_sheet.dart` — the tapped-photo carousel sheet.
-- `features/friends/friends_screen.dart` — friends / requests / find.
+- `features/post/` — library grid → crop → details (location, place name,
+  date, caption); the details screen doubles as the post editor.
+- `features/photo/photo_sheet.dart` — the tapped-photo sheet (carousel, likes,
+  comments, edit/delete).
+- `features/friends/friends_screen.dart` — Recent map / friends / requests /
+  find.
+- `features/settings/` — settings + avatar picker; `features/legal/` — in-app
+  Terms / Privacy.
+- `l10n/` — ARB files (en is the template; ko, ja, zh, es) + generated
+  `AppLocalizations`. Edit the ARBs, then `flutter gen-l10n`.
 
-Migrations in order: `schema`, `rls`, `functions`, `storage`, `profile_fields`,
-`posts_in_view`, `flags`, `flags_all`, `per_user_map` (latest supersedes the
-flag/posts RPCs with per-user-id versions).
+Migrations apply in filename (timestamp) order; a later file may supersede an
+earlier function (e.g. `per_user_map` replaced the map RPCs, `place_label`
+replaced `create_post` / `update_post`).
+
+**Push webhooks:** `send_push` rejects any request without the
+`x-webhook-secret` header matching its `WEBHOOK_SECRET` secret. The three
+Database Webhooks that call it (dashboard → Integrations → Database Webhooks)
+send that header. The secret lives only in the dashboard, never in the repo.
 
 ## How to run
 The app lives in `app/`. With a device attached:
@@ -129,12 +147,18 @@ cd app
 flutter run -d <device-id>        # e.g. an attached Android phone
 ```
 
+Checks (from `app/`): `flutter analyze` must stay clean; `flutter test` runs the
+unit tests.
+
 What's committed and ready:
 - `lib/config/app_config.dart` holds the Supabase URL + publishable key **and the
   Mapbox public access token** (`pk...`). All public-by-design, fine to commit.
 - The Supabase project is **shared** (same keys for everyone) and already has all
   `supabase/migrations/` applied, plus "Confirm email" OFF (the current auth flow
   has no email deep-link). So a collaborator does NOT re-set-up Supabase.
+- It is on the **free plan, which pauses the project after ~7 idle days**. If the
+  dashboard is greyed out / stuck on "Checking..." or the app can't reach
+  Supabase, restore the project from the dashboard first (data is kept).
 
 ## Setting up on a new machine (collaborator onboarding)
 Two things are NOT in the repo and must be provided locally:
