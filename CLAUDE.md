@@ -76,9 +76,10 @@ product decision from the user):
 - **Migrations are the source of truth for schema.** Every schema change is a new
   SQL file under `supabase/migrations/`. No ad-hoc edits in the dashboard that
   aren't captured as a migration.
-- **Secrets never get committed.** The Supabase `anon` key is public by design
-  and may ship in the app; the `service_role` key must **never** be in the app
-  or the repo.
+- **Secrets never get committed.** The `service_role` key must **never** be in
+  the app or the repo. The client keys (Supabase publishable key, Mapbox `pk.`
+  token, `google-services.json`) do ship inside the app, but the repo is
+  **public**, so they live in gitignored local files, not in source.
 
 ## Photo visibility model (core rule)
 A photo is visible to: **its owner** and **the owner's accepted friends**. Nothing
@@ -151,8 +152,8 @@ Checks (from `app/`): `flutter analyze` must stay clean; `flutter test` runs the
 unit tests.
 
 What's committed and ready:
-- `lib/config/app_config.dart` holds the Supabase URL + publishable key **and the
-  Mapbox public access token** (`pk...`). All public-by-design, fine to commit.
+- `lib/config/app_config.dart` holds the Supabase URL and reads the client keys
+  from the gitignored `lib/config/app_keys.dart` (see setup below).
 - The Supabase project is **shared** (same keys for everyone) and already has all
   `supabase/migrations/` applied, plus "Confirm email" OFF (the current auth flow
   has no email deep-link). So a collaborator does NOT re-set-up Supabase.
@@ -161,18 +162,24 @@ What's committed and ready:
   Supabase, restore the project from the dashboard first (data is kept).
 
 ## Setting up on a new machine (collaborator onboarding)
-Two things are NOT in the repo and must be provided locally:
+These are NOT in the repo and must be provided locally:
 1. **Flutter SDK** installed (the original machine had it at `C:\flutter`; yours
    may differ — just have `flutter` on PATH).
 2. **Mapbox secret download token** (`sk...`, scope `DOWNLOADS:READ`) — needed to
    download the Mapbox Android SDK at build time. It must **never be committed**.
-   Put it in your **global** Gradle props `~/.gradle/gradle.properties` (or a
-   gitignored `app/android/gradle.properties`) as:
-   `MAPBOX_DOWNLOADS_TOKEN=sk...`
-   `app/android/build.gradle.kts` reads it as a Gradle property for the Mapbox
-   maven repo. Get the token from the shared Mapbox account (`jihunn`) →
-   account.mapbox.com → Create a token → check `DOWNLOADS:READ`. The public
-   `pk...` token in `AppConfig` is already there.
+   Put it in your **global** Gradle props `~/.gradle/gradle.properties` as
+   `MAPBOX_DOWNLOADS_TOKEN=sk...` — NOT in `app/android/gradle.properties`,
+   which is tracked. `app/android/build.gradle.kts` reads it as a Gradle
+   property for the Mapbox maven repo. Get the token from the shared Mapbox
+   account (`jihunn`) → account.mapbox.com → Create a token → check
+   `DOWNLOADS:READ`.
+3. **Client keys:** copy `app/lib/config/app_keys.example.dart` to
+   `app_keys.dart` (same folder) and fill in the Supabase publishable key
+   (Supabase dashboard → Project Settings → API Keys) and the Mapbox public
+   `pk.` token (account.mapbox.com → Tokens). Without it the app won't compile.
+4. **`app/android/app/google-services.json`** (Firebase, for push): download it
+   from the Firebase console (project `waylo-fba9d` → Project settings → the
+   Android app `com.waylo.waylo`). Without it the Android build fails.
 
 **Applying schema changes:** migrations are applied **manually in the Supabase
 SQL Editor** (no CLI link yet). When you add a file under `supabase/migrations/`,

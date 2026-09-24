@@ -21,12 +21,14 @@ CLAUDE.md   scope, architecture rules, code map, setup — start here
 
 ## Running it
 
-You need the Flutter SDK and a Mapbox **secret download token** (`sk...`,
-scope `DOWNLOADS:READ`) in `~/.gradle/gradle.properties`:
+Keys are not in the repo. You need:
 
-```
-MAPBOX_DOWNLOADS_TOKEN=sk...
-```
+- the Flutter SDK;
+- a Mapbox **secret download token** (`sk...`, scope `DOWNLOADS:READ`) in
+  `~/.gradle/gradle.properties`: `MAPBOX_DOWNLOADS_TOKEN=sk...`;
+- `app/lib/config/app_keys.dart`, copied from `app_keys.example.dart` and
+  filled in (Supabase publishable key, Mapbox public `pk.` token);
+- `app/android/app/google-services.json` from the Firebase console.
 
 Then, with an Android device attached:
 
@@ -35,8 +37,7 @@ cd app
 flutter run
 ```
 
-The public keys (Supabase publishable key, Mapbox `pk.` token) are committed on
-purpose; secrets (`service_role`, the Mapbox `sk.` token, the FCM service
-account, the webhook secret) never are. See `CLAUDE.md` → "Setting up on a new
-machine" for the full checklist, and "Applying schema changes" before adding a
-migration.
+See `CLAUDE.md` → "Setting up on a new machine" for where each key comes
+from, and "Applying schema changes" before adding a migration. Server-side
+secrets (`service_role`, the FCM service account, the webhook secret) live only
+in the Supabase dashboard.

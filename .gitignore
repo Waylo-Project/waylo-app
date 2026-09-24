@@ -3,3 +3,8 @@
 
 # Kotlin compiler session / crash files.
 app/android/.kotlin/
+
+# Client keys + Firebase config. They ship inside the app, but the repo is
+# public, so they stay local (see app_keys.example.dart / CLAUDE.md setup).
+app/lib/config/app_keys.dart
+app/android/app/google-services.json
