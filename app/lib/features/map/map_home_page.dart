@@ -76,7 +76,7 @@ class _MapHomePageState extends State<MapHomePage> {
                 // Open the globe facing the user's own location (zoom stays out).
                 startAtMyLocation: true,
                 // No persistent "no photos" hint on your own map — new users get
-                // a one-time post guide instead (see ROADMAP Phase 6).
+                // a one-time post guide instead.
                 onPhotosSelected: (photos) =>
                     setState(() => _sheetPhotos = photos),
               ),
@@ -107,8 +107,8 @@ class _MapHomePageState extends State<MapHomePage> {
     );
   }
 
-  /// Mark top-left; post (+) (map tab only) and You top-right. Sits below the
-  /// (lowered) scale bar + compass.
+  /// Mark top-left; post (+) and You top-right. Map tab only; sits below the
+  /// (lowered) scale bar.
   Widget _topChrome(BuildContext context) {
     return SafeArea(
       child: Padding(
@@ -117,7 +117,8 @@ class _MapHomePageState extends State<MapHomePage> {
           children: [
             Image.asset('assets/logos/logo2.png', height: 44),
             const Spacer(),
-            if (_tab == 0) ...[_addButton(), const SizedBox(width: 8)],
+            _addButton(),
+            const SizedBox(width: 8),
             _youButton(context),
           ],
         ),
@@ -177,8 +178,7 @@ class _MapHomePageState extends State<MapHomePage> {
     );
   }
 
-  /// (+) opens an anchored, rounded popup (camera / gallery) under the button —
-  /// replaces the old bottom sheet.
+  /// (+) opens an anchored, rounded popup (camera / gallery) under the button.
   Widget _addButton() {
     final l = AppLocalizations.of(context);
     return PopupMenuButton<PhotoSource>(
@@ -207,7 +207,7 @@ class _MapHomePageState extends State<MapHomePage> {
     );
   }
 
-  /// You opens an anchored, rounded popup (profile, map style, sign out).
+  /// You opens an anchored, rounded popup (who is signed in, settings, sign out).
   Widget _youButton(BuildContext context) {
     final l = AppLocalizations.of(context);
     return PopupMenuButton<String>(

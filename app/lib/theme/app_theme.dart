@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-/// Brand colors, carried over from the original waylo design.
+/// Brand colors (fixed); widgets read the theme-aware [WayloColors] instead.
 class AppColors {
   static const Color primary = Color(0xFF97DCF1); // sky blue
 
-  // Ink scale (Hanken redesign). Sky-blue is reserved for action & selection
+  // Ink scale. Sky-blue is reserved for action & selection
   // only; everything textual sits on this neutral scale over white.
   static const Color ink = Color(0xFF15303B); // primary text / headings
   static const Color inkMuted = Color(0xFF55626A); // secondary text
   static const Color inkFaint = Color(0xFF8A949B); // meta / captions
   static const Color hairline = Color(0xFFEAEEF0); // 1px dividers, card borders
 
-  // Semantic surface/accent tokens (added for the Settings screen handoff).
+  // Semantic surface / accent tokens.
   static const Color pageBackground = Color(0xFFF4F6F7); // settings page bg
   static const Color fill = Color(0xFFF1F4F6); // chips / pills / icon chips
   static const Color chevron = Color(0xFFC2CACF); // trailing chevrons
@@ -74,7 +74,7 @@ class WayloColors extends ThemeExtension<WayloColors> {
   final Color warning; // preview / caution notes
   final Color scrim; // modal barrier behind sheets/dialogs
 
-  /// Light palette — the original waylo look, sourced from [AppColors].
+  /// Light palette, sourced from [AppColors].
   static const WayloColors light = WayloColors(
     surface: Colors.white,
     pageBackground: AppColors.pageBackground,
@@ -178,7 +178,7 @@ extension WayloColorsX on BuildContext {
 }
 
 /// App theme. The auth screens use the sky-blue background with white pill
-/// buttons / white filled inputs, matching the original look.
+/// buttons / white filled inputs.
 class AppTheme {
   static ThemeData get light => ThemeData(
     colorScheme: ColorScheme.fromSeed(
@@ -219,7 +219,7 @@ class AuthButtonStyles {
     );
   }
 
-  /// The original "Next" form button: 100x50 rounded pill, white when enabled
+  /// The sign-up "Next" button: 100x50 rounded pill, white when enabled
   /// and grey when disabled, grey label.
   static ButtonStyle form({required bool isEnabled}) {
     return ElevatedButton.styleFrom(

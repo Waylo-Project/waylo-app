@@ -2,11 +2,10 @@ import 'dart:io';
 
 import '../../core/lat_lng.dart';
 
-/// A post being composed but not yet uploaded. Phase 2.1 produces this; Phase
-/// 2.2 turns it into a Storage upload + a `create_post` RPC call.
+/// A post being composed but not yet uploaded; `PostRepository.createPost`
+/// turns it into a Storage upload + a `create_post` RPC call.
 ///
-/// v1 is one photo per post (the backend already supports a carousel via
-/// `post_photos`, so this can grow to a list later).
+/// One photo per post (the backend's `post_photos` could hold several).
 class NewPostDraft {
   NewPostDraft({
     required this.photo,

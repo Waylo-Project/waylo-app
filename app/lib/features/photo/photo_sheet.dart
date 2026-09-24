@@ -17,7 +17,7 @@ import '../post/post_details_screen.dart';
 /// "passport stamp"), the date, the caption, then social — likes (a reactor
 /// cluster + a quiet outline pill, NOT an Instagram action bar) and guestbook
 /// comments, with a composer pinned to the foot of the sheet. Your own posts get
-/// a ••• menu (edit caption / delete). Drag the handle up to expand toward full,
+/// a ••• menu (edit / delete). Drag the handle up to expand toward full,
 /// down to dismiss. Clusters are a horizontal swipe with page dots.
 class PhotoSheet extends StatefulWidget {
   const PhotoSheet({
@@ -66,7 +66,7 @@ class _PhotoSheetState extends State<PhotoSheet>
   Comment? _replyTarget;
 
   // Sheet height as a fraction of the screen; dragged between collapsed and
-  // (near) full. The old sheet was fixed-height and couldn't be pulled up.
+  // (near) full.
   static const double _collapsed = 0.6;
   static const double _expanded = 0.92;
   static const double _dismissBelow = 0.45;
@@ -957,8 +957,8 @@ class _LikePill extends StatelessWidget {
   }
 }
 
-/// A guestbook comment: avatar + name · time + soft bubble, with an optional
-/// delete on long-press for comments you may remove.
+/// A guestbook comment: avatar + name · time + soft bubble, with a × to
+/// delete comments you may remove and a Reply link.
 class _CommentBubble extends StatelessWidget {
   const _CommentBubble({
     required this.comment,

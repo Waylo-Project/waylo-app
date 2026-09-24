@@ -11,7 +11,7 @@ import 'geocoding.dart';
 ///
 /// Storage path convention is `{uid}/{groupId}/{index}.jpg` — the first segment
 /// must be the caller's uid, which both the Storage insert policy and the RPC
-/// enforce. v1 is one photo, so the index is always 0.
+/// enforce. One photo per post, so the index is always 0.
 class PostRepository {
   PostRepository([SupabaseClient? client])
     : _client = client ?? Supabase.instance.client;

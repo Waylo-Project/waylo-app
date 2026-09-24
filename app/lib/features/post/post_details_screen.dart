@@ -33,7 +33,7 @@ class EditPostResult {
   final String? placeLabel;
 }
 
-/// Step 2 of posting (per `docs/POST.md` + the design handoff, screen 2):
+/// Step 3 of posting (see `docs/POST.md`), also reused to edit a post:
 /// confirm where the photo is pinned and its details. A real map up top (drag
 /// to place, search to jump, recenter), then editable place name, date (date
 /// only), caption, and a coordinates expander. "Post" returns a [NewPostDraft].
@@ -99,8 +99,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
   late core.LatLng _center = widget.initialLocation;
 
   // Built ONCE. Passing a fresh CameraViewportState on every rebuild makes
-  // MapWidget re-apply it and snap the camera back to the start — which is why
-  // a search/drag appeared not to move the map (see photo_map_view.dart).
+  // MapWidget re-apply it and snap the camera back to the start.
   late final CameraViewportState _viewport = CameraViewportState(
     center: Point(
       coordinates: Position(

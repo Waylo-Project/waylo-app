@@ -17,9 +17,9 @@ import '../photo/photo_sheet.dart';
 
 /// Friends hub: your friends, incoming requests, and finding people by username.
 /// Embeddable (no Scaffold / app bar) — hosted under the map-home chrome and
-/// swapped in by the `Map | Friends` pill. Hanken-redesign: an iOS-style
-/// segmented control over roomy 72px rows, request cards with mutual context,
-/// and a passport strip of country flags per friend.
+/// swapped in by the `Map | Friends` pill: an iOS-style segmented control
+/// (Recent / Friends / Requests) over 72px rows, request cards with mutual
+/// context, and a passport strip of country flags per friend.
 class FriendsView extends StatefulWidget {
   const FriendsView({super.key});
 
@@ -38,8 +38,7 @@ class _FriendsViewState extends State<FriendsView> {
   List<IncomingRequest>? _requests;
 
   // The tapped Recent photo / cluster, hoisted to this level so its sheet
-  // renders ABOVE the floating header (inside _RecentPanel it sat under the
-  // segmented control + search button and they overlapped it).
+  // renders ABOVE the floating header.
   List<FeedPoint>? _sheet;
 
   // Lets a tab switch ask the Recent panel to refetch (it manages its own feed).
@@ -47,7 +46,7 @@ class _FriendsViewState extends State<FriendsView> {
       GlobalKey<_RecentPanelState>();
 
   /// Refresh the tab you switch to, so friends' new posts / requests show up
-  /// without a manual pull. [silent] keeps the list on screen during the fetch.
+  /// without a manual pull (silently: the list stays on screen meanwhile).
   void _onTabChanged(int i) {
     setState(() => _seg = i);
     switch (i) {
@@ -125,8 +124,7 @@ class _FriendsViewState extends State<FriendsView> {
           ),
         ),
         // Floating header: transparent over the Recent map (map shows through
-        // above the buttons), solid white over the lists. The segmented control
-        // keeps its original vertical position.
+        // above the buttons), solid white over the lists.
         Positioned(
           top: 0,
           left: 0,
@@ -160,8 +158,7 @@ class _FriendsViewState extends State<FriendsView> {
     );
   }
 
-  /// Find moved off the segmented control onto the search icon: open it as a
-  /// pushed screen.
+  /// The search icon opens Find as a pushed screen.
   void _openFind() {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -1001,7 +998,7 @@ class _Empty extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Find (moved off the segmented control to a search icon)
+// Find screen
 // ---------------------------------------------------------------------------
 
 /// Rounded-square search button beside the segmented control; opens Find.
@@ -1167,8 +1164,6 @@ class _RecentPanelState extends State<_RecentPanel> {
   }
 }
 
-/// The bottom strip of "just in" cards — the same recent posts as the map, as a
-/// horizontal scroller.
 /// Floating summary chip over the recent map: "● Last 24h · N posts · M friends".
 class _SummaryPill extends StatelessWidget {
   const _SummaryPill({required this.posts, required this.friends});

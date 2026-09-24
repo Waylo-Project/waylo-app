@@ -17,8 +17,8 @@ import '../legal/legal_content.dart';
 import '../legal/legal_screen.dart';
 import 'avatar_picker_screen.dart';
 
-/// The Settings screen — one scrolling page grouped into sections, per
-/// `docs/SETTINGS.md` and the design handoff. Colors read from the theme-aware
+/// The Settings screen — one scrolling page grouped into sections (see
+/// `docs/SETTINGS.md`). Colors read from the theme-aware
 /// [WayloColors] tokens (`context.c`), so the whole screen adapts to light/dark.
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key, required this.profile});
@@ -498,8 +498,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  /// Account-deletion confirmation. The actual delete needs a server-side
-  /// routine (RPC / Edge Function) — wired in a later phase.
+  /// Account-deletion confirmation; confirming runs [_deleteAccount].
   Future<void> _openDeleteDialog() async {
     final l = AppLocalizations.of(context);
     final c = context.c;
@@ -595,7 +594,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     } catch (e) {
       if (!mounted) return;
       Navigator.of(context, rootNavigator: true).pop(); // dismiss spinner
-      _snack(l.settingsCouldNotDeleteAccount('$e'));
+      _showError(l.settingsCouldNotDeleteAccount('$e'));
     }
   }
 
@@ -627,7 +626,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       setState(() => _profile = updated);
     } catch (e) {
       if (!mounted) return;
-      _snack(AppLocalizations.of(context).settingsCouldNotUpdatePhoto('$e'));
+      _showError(
+        AppLocalizations.of(context).settingsCouldNotUpdatePhoto('$e'),
+      );
     }
   }
 
@@ -638,7 +639,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       setState(() => _profile = updated);
     } catch (e) {
       if (!mounted) return;
-      _snack(AppLocalizations.of(context).settingsCouldNotRemovePhoto('$e'));
+      _showError(
+        AppLocalizations.of(context).settingsCouldNotRemovePhoto('$e'),
+      );
     }
   }
 
@@ -652,7 +655,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       hint: l.settingsUsernameHint,
       onSubmit: (raw) async {
         final v = raw.trim();
-        // Field-level validation stays in the dialog (inline, not a snackbar).
+        // Field-level validation stays in the dialog (inline).
         if (v.isEmpty) return _EditResult.error(l.settingsEnterUsername);
         if (v == _profile.username) return _EditResult.dismiss;
         try {
@@ -663,8 +666,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         } on UsernameTakenException {
           return _EditResult.error(l.signUpUsernameTaken);
         } catch (e) {
-          // Transient/network failure → snackbar, close the dialog.
-          _snack(l.settingsCouldNotUpdateUsername('$e'));
+          // Transient/network failure → error dialog, close the editor.
+          _showError(l.settingsCouldNotUpdateUsername('$e'));
           return _EditResult.dismiss;
         }
       },
@@ -684,7 +687,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           setState(() => _profile = updated);
           return _EditResult.ok;
         } catch (e) {
-          _snack(l.settingsCouldNotUpdateDisplayName('$e'));
+          _showError(l.settingsCouldNotUpdateDisplayName('$e'));
           return _EditResult.dismiss;
         }
       },
@@ -710,10 +713,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           // The email does NOT change until the user clicks the confirmation
           // link sent to the new address, so we don't optimistically update the
           // displayed value — we tell them to check their inbox instead.
-          _snack(l.settingsEmailChangeSent(v));
+          _showError(l.settingsEmailChangeSent(v));
           return _EditResult.dismiss;
         } catch (e) {
-          _snack(l.settingsCouldNotUpdateEmail('$e'));
+          _showError(l.settingsCouldNotUpdateEmail('$e'));
           return _EditResult.dismiss;
         }
       },
@@ -739,7 +742,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           );
           return _EditResult.ok;
         } catch (e) {
-          _snack(l.settingsCouldNotUpdatePassword('$e'));
+          _showError(l.settingsCouldNotUpdatePassword('$e'));
           return _EditResult.dismiss;
         }
       },
@@ -748,7 +751,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   /// A single-field editor dialog that validates **in place**: [onSubmit] runs
   /// while the dialog stays open, and a returned [_EditResult.error] is shown
-  /// inline (red helper text) instead of as a snackbar, so the user can fix the
+  /// inline (red helper text), so the user can fix the
   /// value without reopening. Success / no-change / handled-elsewhere close it.
   Future<void> _promptEdit({
     required String title,
@@ -772,7 +775,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _snack(String msg) {
+  void _showError(String msg) {
     if (!mounted) return;
     showErrorDialog(context, msg);
   }
@@ -786,7 +789,7 @@ enum _EditOutcome { success, inlineError, dismissed }
 
 /// Outcome of an [_EditDialog] save. [error] keeps the dialog open and shows an
 /// inline message; [ok]/[dismiss] both close it (dismiss = the caller already
-/// handled feedback, e.g. a snackbar, or there was nothing to change).
+/// handled feedback, e.g. an error dialog, or there was nothing to change).
 class _EditResult {
   const _EditResult._(this.outcome, [this.message]);
 

@@ -69,7 +69,7 @@ class PhotoMapViewState extends State<PhotoMapView> {
   LatLng _cameraCenter = _initialTarget;
 
   // At/below this zoom the map shows country flags (Tier A); above it, photos
-  // (Tier B). Matches the original waylo threshold (4.0). See DESIGN.md §3.
+  // (Tier B). See DESIGN.md §3.
   static const double _flagZoomMax = 4.0;
 
   // Fallback zoom base for a flag tap that can't resolve its country's posts:
@@ -172,10 +172,9 @@ class PhotoMapViewState extends State<PhotoMapView> {
         marginLeft: 12,
       ),
     );
-    // Compass pinned to the very BOTTOM-RIGHT corner — the opposite side from
-    // the Mapbox mark (bottom-left), so it clears every chrome element: up top
-    // it collided with the Recent header's search button, and a raised margin
-    // overlapped the "Just in" strip. Sit it level with the Mapbox logo.
+    // Compass in the bottom-right corner, level with the Mapbox mark on the
+    // left: the one spot clear of every chrome element (the Recent header's
+    // search button up top, the "Just in" strip above the bottom edge).
     map.compass.updateSettings(
       CompassSettings(
         position: OrnamentPosition.BOTTOM_RIGHT,
@@ -560,9 +559,8 @@ class PhotoMapViewState extends State<PhotoMapView> {
       for (final f in toAdd)
         if (_flagImageCache[f.countryCode] != null) f,
     ];
-    // Place each flag at its country's center (geocoded), like the original
-    // waylo. Falls back to the centroid of the user's posts in that country if
-    // the lookup fails.
+    // Place each flag at its country's center (geocoded), falling back to the
+    // centroid of the user's posts in that country if the lookup fails.
     final places = await Future.wait(
       addable.map(
         (f) async => (await countryCenter(f.countryCode)) ?? f.location,
