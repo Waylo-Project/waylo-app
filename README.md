@@ -248,3 +248,5 @@ CLAUDE.md   scope, architecture rules, code map, setup
 
 **Jihun Cho**
 - GitHub: [@Jihun37](https://github.com/Jihun37)
+
+**Eunjun Go**
