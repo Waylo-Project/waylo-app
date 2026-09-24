@@ -10,6 +10,21 @@ your accepted friends.
   security for every access rule. There is no custom server; multi-row logic
   lives in SQL functions, and push notifications go through one Edge Function.
 
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/01-globe.jpg" width="240" alt="Globe view with country flags"><br><sub>Your map, zoomed out: a flag per country</sub></td>
+    <td align="center"><img src="docs/screenshots/02-map.jpg" width="240" alt="City view with photo markers"><br><sub>Zoomed in: photos pinned where they were taken</sub></td>
+    <td align="center"><img src="docs/screenshots/03-photo-sheet.jpg" width="240" alt="Photo sheet over the map"><br><sub>Tap a photo: place, date, likes, comments</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/04-photo.jpg" width="240" alt="Expanded photo sheet"><br><sub>The photo sheet, expanded</sub></td>
+    <td align="center"><img src="docs/screenshots/05-recent.jpg" width="240" alt="Recent map of friends' posts"><br><sub>Recent: friends' last 24 hours on one map</sub></td>
+    <td align="center"><img src="docs/screenshots/06-post.jpg" width="240" alt="Post details screen"><br><sub>Posting: location from the photo, editable place name</sub></td>
+  </tr>
+</table>
+
 ## Repository
 
 ```
