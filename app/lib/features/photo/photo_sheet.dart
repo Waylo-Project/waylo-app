@@ -5,6 +5,7 @@ import 'package:zoom_pinch_overlay/zoom_pinch_overlay.dart';
 import '../../core/date_format.dart';
 import '../../core/error_dialog.dart';
 import '../../core/lat_lng.dart';
+import '../../core/user_avatar.dart';
 import '../../data/feed_repository.dart';
 import '../../data/geocoding.dart';
 import '../../l10n/app_localizations.dart';
@@ -325,7 +326,8 @@ class _PhotoCardState extends State<_PhotoCard>
     super.dispose();
   }
 
-  Future<void> _load() async {
+  /// Resolve the place name + flag for the current [_location].
+  void _geocode() {
     final loc = _location;
     reversePlaceName(loc).then((p) {
       if (mounted) setState(() => _place = p);
@@ -333,6 +335,10 @@ class _PhotoCardState extends State<_PhotoCard>
     reverseCountryCode(loc).then((c) {
       if (mounted) setState(() => _countryCode = c);
     });
+  }
+
+  Future<void> _load() async {
+    _geocode();
     _feed.postDetail(_postId).then((d) {
       if (mounted) setState(() => _detail = d);
     });
@@ -479,12 +485,7 @@ class _PhotoCardState extends State<_PhotoCard>
       _place = null;
       _countryCode = null;
     });
-    reversePlaceName(_location).then((p) {
-      if (mounted) setState(() => _place = p);
-    });
-    reverseCountryCode(_location).then((c) {
-      if (mounted) setState(() => _countryCode = c);
-    });
+    _geocode();
     widget.onEdited?.call();
   }
 
@@ -894,7 +895,7 @@ class _ReactorCluster extends StatelessWidget {
                   color: context.c.surface,
                 ),
                 padding: const EdgeInsets.all(1.5),
-                child: _MiniAvatar(
+                child: UserAvatar(
                   url: likers[i].avatarUrl,
                   name: likers[i].username,
                   radius: d / 2 - 1.5,
@@ -979,7 +980,7 @@ class _CommentBubble extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _MiniAvatar(
+          UserAvatar(
             url: comment.avatarUrl,
             name: comment.username,
             radius: isReply ? 12 : 15,
@@ -1001,7 +1002,10 @@ class _CommentBubble extends StatelessWidget {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      _ago(AppLocalizations.of(context), comment.createdAt),
+                      formatAgo(
+                        AppLocalizations.of(context),
+                        comment.createdAt,
+                      ),
                       style: TextStyle(
                         fontSize: 11.5,
                         color: context.c.inkFaint,
@@ -1197,39 +1201,4 @@ class _Composer extends StatelessWidget {
       ),
     );
   }
-}
-
-/// A small round avatar: the network image if present, else a tinted initial.
-class _MiniAvatar extends StatelessWidget {
-  const _MiniAvatar({required this.url, required this.name, this.radius = 15});
-  final String? url;
-  final String name;
-  final double radius;
-
-  @override
-  Widget build(BuildContext context) {
-    final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
-    return CircleAvatar(
-      radius: radius,
-      backgroundColor: context.c.primary.withValues(alpha: 0.25),
-      foregroundImage: url != null ? NetworkImage(url!) : null,
-      child: Text(
-        initial,
-        style: TextStyle(
-          fontSize: radius * 0.8,
-          fontWeight: FontWeight.w700,
-          color: context.c.ink,
-        ),
-      ),
-    );
-  }
-}
-
-String _ago(AppLocalizations l, DateTime t) {
-  final d = DateTime.now().difference(t);
-  if (d.inMinutes < 1) return l.timeNow;
-  if (d.inMinutes < 60) return l.timeMinutesShort(d.inMinutes);
-  if (d.inHours < 24) return l.timeHoursShort(d.inHours);
-  if (d.inDays < 7) return l.timeDaysShort(d.inDays);
-  return l.timeWeeksShort((d.inDays / 7).floor());
 }

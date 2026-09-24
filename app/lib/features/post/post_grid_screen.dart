@@ -6,6 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart' hide LatLng;
 
 import '../../core/lat_lng.dart';
+import '../../core/photo_library.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
 
@@ -47,25 +48,15 @@ class _PostGridScreenState extends State<PostGridScreen> {
   }
 
   Future<void> _loadLibrary() async {
-    final ps = await PhotoManager.requestPermissionExtend(
-      requestOption: PermissionRequestOption(
-        androidPermission: AndroidPermission(
-          type: RequestType.image,
-          mediaLocation: true,
-        ),
-      ),
-    );
-    if (!ps.hasAccess) {
-      if (mounted) setState(() => _permissionDenied = true);
-      return;
-    }
-    final paths = await PhotoManager.getAssetPathList(
-      type: RequestType.image,
-      onlyAll: true,
-    );
-    if (paths.isEmpty) return;
-    final assets = await paths.first.getAssetListPaged(page: 0, size: 120);
-    if (mounted) setState(() => _assets = assets);
+    final assets = await loadRecentPhotos(mediaLocation: true);
+    if (!mounted) return;
+    setState(() {
+      if (assets == null) {
+        _permissionDenied = true;
+      } else {
+        _assets = assets;
+      }
+    });
   }
 
   Future<void> _selectAsset(AssetEntity asset) async {
@@ -185,68 +176,10 @@ class _PostGridScreenState extends State<PostGridScreen> {
         ),
       );
     }
-    return GridView.builder(
-      padding: EdgeInsets.zero,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        mainAxisSpacing: 2,
-        crossAxisSpacing: 2,
-      ),
-      itemCount: _assets.length,
-      itemBuilder: (_, i) => _GridCell(
-        asset: _assets[i],
-        cache: _thumbCache,
-        onTap: () => _selectAsset(_assets[i]),
-      ),
-    );
-  }
-}
-
-class _GridCell extends StatefulWidget {
-  const _GridCell({
-    required this.asset,
-    required this.cache,
-    required this.onTap,
-  });
-  final AssetEntity asset;
-  final Map<String, Uint8List> cache;
-  final VoidCallback onTap;
-  @override
-  State<_GridCell> createState() => _GridCellState();
-}
-
-class _GridCellState extends State<_GridCell> {
-  Uint8List? _bytes;
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    final cached = widget.cache[widget.asset.id];
-    if (cached != null) {
-      _bytes = cached;
-      return;
-    }
-    final b = await widget.asset.thumbnailDataWithSize(
-      const ThumbnailSize.square(220),
-    );
-    if (b == null) return;
-    widget.cache[widget.asset.id] = b;
-    if (mounted) setState(() => _bytes = b);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: widget.onTap,
-      child: Container(
-        color: const Color(0xFFEDEFF1),
-        child: _bytes == null
-            ? null
-            : Image.memory(_bytes!, fit: BoxFit.cover, gaplessPlayback: true),
-      ),
+    return PhotoLibraryGrid(
+      assets: _assets,
+      cache: _thumbCache,
+      onTap: _selectAsset,
     );
   }
 }

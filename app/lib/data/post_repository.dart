@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 import '../features/post/new_post_draft.dart';
+import 'feed_repository.dart';
 import 'geocoding.dart';
 
 /// Creates posts: compress + upload the photo to Storage, then write the row
@@ -47,8 +48,7 @@ class PostRepository {
         );
 
     // Pre-generate a small thumbnail so map markers load a static file (~40ms)
-    // instead of an on-the-fly Storage transform (~600ms). Path convention:
-    // the original's name with a `_thumb` suffix (see FeedRepository.thumbnail).
+    // instead of an on-the-fly Storage transform (~600ms); see [thumbPathFor].
     final thumb = await FlutterImageCompress.compressWithFile(
       draft.photo.absolute.path,
       minWidth: 240,
@@ -59,7 +59,7 @@ class PostRepository {
       await _client.storage
           .from('photos')
           .uploadBinary(
-            '$uid/$group/0_thumb.jpg',
+            thumbPathFor(path),
             thumb,
             fileOptions: const FileOptions(contentType: 'image/jpeg'),
           );

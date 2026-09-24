@@ -3,6 +3,16 @@ import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/lat_lng.dart';
+import 'profile_repository.dart';
+
+/// A `lat` / `lng` pair from an RPC row.
+LatLng _rowLatLng(Map<String, dynamic> m) =>
+    LatLng((m['lat'] as num).toDouble(), (m['lng'] as num).toDouble());
+
+/// Storage path of a photo's pre-generated marker thumbnail, uploaded next to
+/// the original: `{uid}/{group}/0.jpg` -> `{uid}/{group}/0_thumb.jpg`.
+String thumbPathFor(String imagePath) =>
+    imagePath.replaceFirst(RegExp(r'\.jpg$'), '_thumb.jpg');
 
 /// One photo pin on the map: a post's location plus its first photo's path.
 class FeedPoint {
@@ -22,10 +32,7 @@ class FeedPoint {
     return FeedPoint(
       postId: m['post_id'] as String,
       ownerId: m['owner_id'] as String,
-      location: LatLng(
-        (m['lat'] as num).toDouble(),
-        (m['lng'] as num).toDouble(),
-      ),
+      location: _rowLatLng(m),
       imagePath: m['image_path'] as String,
     );
   }
@@ -42,10 +49,7 @@ class FlagPoint {
   factory FlagPoint.fromMap(Map<String, dynamic> m) {
     return FlagPoint(
       countryCode: m['country_code'] as String,
-      location: LatLng(
-        (m['lat'] as num).toDouble(),
-        (m['lng'] as num).toDouble(),
-      ),
+      location: _rowLatLng(m),
     );
   }
 }
@@ -90,10 +94,7 @@ class RecentPoint extends FeedPoint {
     return RecentPoint(
       postId: m['post_id'] as String,
       ownerId: m['owner_id'] as String,
-      location: LatLng(
-        (m['lat'] as num).toDouble(),
-        (m['lng'] as num).toDouble(),
-      ),
+      location: _rowLatLng(m),
       imagePath: m['image_path'] as String,
       username: m['username'] as String,
       createdAt: DateTime.parse(m['created_at'] as String),
@@ -156,8 +157,9 @@ class CommentThread {
   final List<Comment> replies;
 }
 
-/// Reads the posts visible to the current user (own + accepted friends, via
-/// RLS) within a map bounding box. Backed by the `posts_in_view` RPC.
+/// Post reads and writes behind the maps and the photo sheet: map queries,
+/// photo URLs + thumbnails, likes, comments, edit and delete. Reads are
+/// RLS-scoped (own posts + accepted friends'), writes are owner-checked.
 class FeedRepository {
   FeedRepository([SupabaseClient? client])
     : _client = client ?? Supabase.instance.client;
@@ -202,10 +204,7 @@ class FeedRepository {
               params: {'p_user_id': userId, 'p_country_code': countryCode},
             )
             as List<dynamic>;
-    return rows.map((r) {
-      final m = r as Map<String, dynamic>;
-      return LatLng((m['lat'] as num).toDouble(), (m['lng'] as num).toDouble());
-    }).toList();
+    return rows.map((r) => _rowLatLng(r as Map<String, dynamic>)).toList();
   }
 
   /// Whether [userId] has any post the caller may see (RLS-scoped) — a cheap
@@ -255,16 +254,10 @@ class FeedRepository {
       username: profile?['username'] as String?,
       caption: row['caption'] as String?,
       takenAt: taken == null ? null : DateTime.tryParse(taken),
-      avatarUrl: avatarPath == null
-          ? null
-          : _client.storage.from('avatars').getPublicUrl(avatarPath),
+      avatarUrl: avatarPublicUrl(_client, avatarPath),
       placeLabel: row['place_label'] as String?,
     );
   }
-
-  /// Public URL for an avatar (the `avatars` bucket is public). null-safe.
-  String? _avatarUrl(String? path) =>
-      path == null ? null : _client.storage.from('avatars').getPublicUrl(path);
 
   /// Every accepted friend's posts from the last 24h, newest first, for the
   /// merged "Recent" map + "Just in" strip. Backed by the `recent_feed` RPC
@@ -273,7 +266,10 @@ class FeedRepository {
     final rows = await _client.rpc('recent_feed') as List<dynamic>;
     return rows.map((r) {
       final m = r as Map<String, dynamic>;
-      return RecentPoint.fromMap(m, _avatarUrl(m['avatar_path'] as String?));
+      return RecentPoint.fromMap(
+        m,
+        avatarPublicUrl(_client, m['avatar_path'] as String?),
+      );
     }).toList();
   }
 
@@ -306,7 +302,8 @@ class FeedRepository {
           Liker(
             userId: r['user_id'] as String,
             username: (r['profiles'] as Map)['username'] as String,
-            avatarUrl: _avatarUrl(
+            avatarUrl: avatarPublicUrl(
+              _client,
               (r['profiles'] as Map)['avatar_path'] as String?,
             ),
           ),
@@ -389,7 +386,7 @@ class FeedRepository {
       body: r['body'] as String,
       createdAt: DateTime.parse(r['created_at'] as String),
       parentId: r['parent_id'] as String?,
-      avatarUrl: _avatarUrl(profile?['avatar_path'] as String?),
+      avatarUrl: avatarPublicUrl(_client, profile?['avatar_path'] as String?),
     );
   }
 
@@ -450,7 +447,7 @@ class FeedRepository {
     for (final r in photoRows) {
       final p = (r as Map)['image_path'] as String;
       paths.add(p);
-      paths.add(p.replaceFirst(RegExp(r'\.jpg$'), '_thumb.jpg'));
+      paths.add(thumbPathFor(p));
     }
     await _client.from('posts').delete().eq('id', postId);
     if (paths.isNotEmpty) {
@@ -467,7 +464,7 @@ class FeedRepository {
   /// original (~600ms) for older posts that have no pre-made thumb.
   Future<Uint8List> thumbnail(String imagePath, {int size = 120}) async {
     final store = _client.storage.from('photos');
-    final thumbPath = imagePath.replaceFirst(RegExp(r'\.jpg$'), '_thumb.jpg');
+    final thumbPath = thumbPathFor(imagePath);
     try {
       return await store.download(thumbPath);
     } catch (_) {

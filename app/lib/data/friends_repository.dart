@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'profile_repository.dart';
+
 /// A user shown in friend lists / search results.
 class UserSummary {
   const UserSummary({
@@ -58,16 +60,11 @@ class FriendsRepository {
 
   String get _uid => _client.auth.currentUser!.id;
 
-  UserSummary _summary(Map<String, dynamic> row) {
-    final avatarPath = row['avatar_path'] as String?;
-    return UserSummary(
-      id: row['id'] as String,
-      username: row['username'] as String,
-      avatarUrl: avatarPath == null
-          ? null
-          : _client.storage.from('avatars').getPublicUrl(avatarPath),
-    );
-  }
+  UserSummary _summary(Map<String, dynamic> row) => UserSummary(
+    id: row['id'] as String,
+    username: row['username'] as String,
+    avatarUrl: avatarPublicUrl(_client, row['avatar_path'] as String?),
+  );
 
   /// Search profiles by username (case-insensitive), excluding myself.
   Future<List<UserSummary>> search(String query) async {

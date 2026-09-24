@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../../core/error_dialog.dart';
+import '../../core/photo_library.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
 
@@ -29,7 +30,6 @@ class AvatarPickerScreen extends StatefulWidget {
 class _AvatarPickerScreenState extends State<AvatarPickerScreen> {
   // Match the post crop screen: dark crop stage, white chrome + grid.
   static const Color _bg = Color(0xFF0F1216);
-  static const Color _cell = Color(0xFFEDEFF1);
 
   final GlobalKey _previewKey = GlobalKey();
   final TransformationController _controller = TransformationController();
@@ -87,27 +87,12 @@ class _AvatarPickerScreenState extends State<AvatarPickerScreen> {
   }
 
   Future<void> _loadLibrary() async {
-    // Scope the permission check to images only — the default checks
-    // image+video+audio, which fails when only READ_MEDIA_IMAGES is granted.
-    final ps = await PhotoManager.requestPermissionExtend(
-      requestOption: const PermissionRequestOption(
-        androidPermission: AndroidPermission(
-          type: RequestType.image,
-          mediaLocation: false,
-        ),
-      ),
-    );
-    if (!ps.hasAccess) {
-      if (mounted) setState(() => _permissionDenied = true);
+    final assets = await loadRecentPhotos(mediaLocation: false);
+    if (!mounted) return;
+    if (assets == null) {
+      setState(() => _permissionDenied = true);
       return;
     }
-    final paths = await PhotoManager.getAssetPathList(
-      type: RequestType.image,
-      onlyAll: true,
-    );
-    if (paths.isEmpty) return;
-    final assets = await paths.first.getAssetListPaged(page: 0, size: 120);
-    if (!mounted) return;
     setState(() => _assets = assets);
     // Seed the preview with the most recent photo (unless a camera shot seeded it).
     if (_previewBytes == null && assets.isNotEmpty) {
@@ -301,20 +286,10 @@ class _AvatarPickerScreenState extends State<AvatarPickerScreen> {
         ),
       );
     }
-    return GridView.builder(
-      padding: EdgeInsets.zero,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        mainAxisSpacing: 2,
-        crossAxisSpacing: 2,
-      ),
-      itemCount: _assets.length,
-      itemBuilder: (_, i) => _GridCell(
-        asset: _assets[i],
-        cache: _thumbCache,
-        background: _cell,
-        onTap: () => _selectAsset(_assets[i]),
-      ),
+    return PhotoLibraryGrid(
+      assets: _assets,
+      cache: _thumbCache,
+      onTap: _selectAsset,
     );
   }
 
@@ -341,61 +316,6 @@ class _AvatarPickerScreenState extends State<AvatarPickerScreen> {
         );
       }
     }
-  }
-}
-
-/// One grid thumbnail. Loads (and caches) its bytes once.
-class _GridCell extends StatefulWidget {
-  const _GridCell({
-    required this.asset,
-    required this.cache,
-    required this.background,
-    required this.onTap,
-  });
-
-  final AssetEntity asset;
-  final Map<String, Uint8List> cache;
-  final Color background;
-  final VoidCallback onTap;
-
-  @override
-  State<_GridCell> createState() => _GridCellState();
-}
-
-class _GridCellState extends State<_GridCell> {
-  Uint8List? _bytes;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    final cached = widget.cache[widget.asset.id];
-    if (cached != null) {
-      _bytes = cached;
-      return;
-    }
-    final bytes = await widget.asset.thumbnailDataWithSize(
-      const ThumbnailSize.square(220),
-    );
-    if (bytes == null) return;
-    widget.cache[widget.asset.id] = bytes;
-    if (mounted) setState(() => _bytes = bytes);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: widget.onTap,
-      child: Container(
-        color: widget.background,
-        child: _bytes == null
-            ? null
-            : Image.memory(_bytes!, fit: BoxFit.cover, gaplessPlayback: true),
-      ),
-    );
   }
 }
 

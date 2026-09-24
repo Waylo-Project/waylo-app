@@ -33,13 +33,14 @@ class Profile {
     );
   }
 
-  /// Public URL for the avatar (the `avatars` bucket is public), or null.
-  String? get avatarUrl {
-    final path = avatarPath;
-    if (path == null) return null;
-    return Supabase.instance.client.storage.from('avatars').getPublicUrl(path);
-  }
+  /// Public URL for the avatar, or null.
+  String? get avatarUrl =>
+      avatarPublicUrl(Supabase.instance.client, avatarPath);
 }
+
+/// Public URL for an avatar in the (public) `avatars` bucket; null for none.
+String? avatarPublicUrl(SupabaseClient client, String? path) =>
+    path == null ? null : client.storage.from('avatars').getPublicUrl(path);
 
 /// Reads/writes the current user's row in `profiles`. RLS enforces that a user
 /// can only insert/update their own row, so we never pass a foreign user id.

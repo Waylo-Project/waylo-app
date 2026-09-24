@@ -15,27 +15,50 @@ String _geoLanguage() {
   return code == 'zh' ? 'zh-Hans' : code;
 }
 
-/// A short place name (city/locality) for a location, for the photo sheet
-/// headline. Best-effort; null on failure. [language] overrides the resolved
-/// UI language (defaults to it).
-Future<String?> reversePlaceName(LatLng loc, {String? language}) async {
+/// Runs one Mapbox geocoding request ([search] is "lng,lat" for a reverse
+/// lookup, or URL-encoded text) and hands the result features to [parse].
+/// Every lookup is best-effort: a non-200 response or any error gives
+/// [fallback], never a throw.
+Future<T> _geocode<T>(
+  String search,
+  Map<String, String> params, {
+  required T fallback,
+  required T Function(List<Map<String, dynamic>> features) parse,
+}) async {
   try {
-    final uri = Uri.parse(
-      'https://api.mapbox.com/geocoding/v5/mapbox.places/'
-      '${loc.longitude},${loc.latitude}.json'
-      '?types=place&language=${language ?? _geoLanguage()}&limit=1'
-      '&access_token=${AppConfig.mapboxPublicToken}',
-    );
+    final uri =
+        Uri.parse(
+          'https://api.mapbox.com/geocoding/v5/mapbox.places/$search.json',
+        ).replace(
+          queryParameters: {
+            ...params,
+            'access_token': AppConfig.mapboxPublicToken,
+          },
+        );
     final res = await http.get(uri);
-    if (res.statusCode != 200) return null;
+    if (res.statusCode != 200) return fallback;
     final data = jsonDecode(res.body) as Map<String, dynamic>;
-    final features = data['features'] as List<dynamic>;
-    if (features.isEmpty) return null;
-    return (features.first as Map<String, dynamic>)['text'] as String?;
+    return parse((data['features'] as List).cast<Map<String, dynamic>>());
   } catch (_) {
-    return null;
+    return fallback;
   }
 }
+
+String _at(LatLng loc) => '${loc.longitude},${loc.latitude}';
+
+LatLng _centerOf(Map<String, dynamic> feature) {
+  final c = feature['center'] as List;
+  return LatLng((c[1] as num).toDouble(), (c[0] as num).toDouble());
+}
+
+/// A short place name (city/locality) for a location, for the photo sheet
+/// headline. Null on failure.
+Future<String?> reversePlaceName(LatLng loc) => _geocode(
+  _at(loc),
+  {'types': 'place', 'language': _geoLanguage(), 'limit': '1'},
+  fallback: null,
+  parse: (f) => f.isEmpty ? null : f.first['text'] as String?,
+);
 
 /// A place headline plus its country, resolved in one reverse-geocode: the city
 /// text, the country name, and the ISO alpha-2 code (lowercase, for the flag
@@ -48,40 +71,29 @@ class PlaceLabel {
 }
 
 /// Reverse-geocode a location to a [PlaceLabel] in a single call: the `place`
-/// feature carries the country in its `context`. Best-effort; blank on failure.
-/// [language] overrides the resolved UI language (defaults to it).
-Future<PlaceLabel> reversePlaceLabel(LatLng loc, {String? language}) async {
-  try {
-    final uri = Uri.parse(
-      'https://api.mapbox.com/geocoding/v5/mapbox.places/'
-      '${loc.longitude},${loc.latitude}.json'
-      '?types=place&language=${language ?? _geoLanguage()}&limit=1'
-      '&access_token=${AppConfig.mapboxPublicToken}',
-    );
-    final res = await http.get(uri);
-    if (res.statusCode != 200) return const PlaceLabel();
-    final data = jsonDecode(res.body) as Map<String, dynamic>;
-    final features = data['features'] as List<dynamic>;
-    if (features.isEmpty) return const PlaceLabel();
-    final feature = features.first as Map<String, dynamic>;
-    final place = feature['text'] as String?;
+/// feature carries the country in its `context`. Blank on failure.
+Future<PlaceLabel> reversePlaceLabel(LatLng loc) => _geocode(
+  _at(loc),
+  {'types': 'place', 'language': _geoLanguage(), 'limit': '1'},
+  fallback: const PlaceLabel(),
+  parse: (f) {
+    if (f.isEmpty) return const PlaceLabel();
     String? country;
     String? code;
-    final context = feature['context'] as List<dynamic>?;
-    if (context != null) {
-      for (final c in context) {
-        final m = c as Map<String, dynamic>;
-        if (((m['id'] as String?) ?? '').startsWith('country')) {
-          country = m['text'] as String?;
-          code = (m['short_code'] as String?)?.toLowerCase();
-        }
+    for (final c in (f.first['context'] as List?) ?? const []) {
+      final m = c as Map<String, dynamic>;
+      if (((m['id'] as String?) ?? '').startsWith('country')) {
+        country = m['text'] as String?;
+        code = (m['short_code'] as String?)?.toLowerCase();
       }
     }
-    return PlaceLabel(place: place, country: country, countryCode: code);
-  } catch (_) {
-    return const PlaceLabel();
-  }
-}
+    return PlaceLabel(
+      place: f.first['text'] as String?,
+      country: country,
+      countryCode: code,
+    );
+  },
+);
 
 /// One forward-geocoding search hit: a human-readable label and its coordinate.
 class PlaceResult {
@@ -91,101 +103,68 @@ class PlaceResult {
 }
 
 /// Forward-geocode a free-text query to a handful of place candidates (for the
-/// "Search a place" box on the post map). Best-effort; empty on failure.
-/// [language] overrides the resolved UI language (defaults to it).
-Future<List<PlaceResult>> searchPlaces(String query, {String? language}) async {
+/// "Search a place" box on the post map). Empty on failure.
+Future<List<PlaceResult>> searchPlaces(String query) async {
   final q = query.trim();
   if (q.isEmpty) return const [];
-  try {
-    final uri = Uri.parse(
-      'https://api.mapbox.com/geocoding/v5/mapbox.places/'
-      '${Uri.encodeComponent(q)}.json'
-      '?limit=6&language=${language ?? _geoLanguage()}'
-      '&access_token=${AppConfig.mapboxPublicToken}',
-    );
-    final res = await http.get(uri);
-    if (res.statusCode != 200) return const [];
-    final data = jsonDecode(res.body) as Map<String, dynamic>;
-    final features = data['features'] as List<dynamic>;
-    return [
-      for (final f in features)
-        if (f is Map<String, dynamic> && f['center'] is List)
+  return _geocode(
+    Uri.encodeComponent(q),
+    {'limit': '6', 'language': _geoLanguage()},
+    fallback: const [],
+    parse: (f) => [
+      for (final feature in f)
+        if (feature['center'] is List)
           PlaceResult(
-            name: (f['place_name'] as String?) ?? (f['text'] as String? ?? ''),
-            location: LatLng(
-              ((f['center'] as List)[1] as num).toDouble(),
-              ((f['center'] as List)[0] as num).toDouble(),
-            ),
+            name:
+                (feature['place_name'] as String?) ??
+                (feature['text'] as String? ?? ''),
+            location: _centerOf(feature),
           ),
-    ];
-  } catch (_) {
-    return const [];
-  }
+    ],
+  );
 }
 
 /// Country center cache (cc -> center), so each country is geocoded once.
 final Map<String, LatLng> _countryCenterCache = {};
 
-/// The geographic center of a country (Mapbox forward geocode of the country
-/// code), used to place the zoomed-out flag marker — like the original waylo,
-/// so the flag sits on the country, not on the user's photos. Cached; null on
-/// failure (caller falls back to the posts' centroid).
+/// The geographic center of a country, used to place the zoomed-out flag
+/// marker so it sits on the country rather than on the user's photos. Cached;
+/// null on failure (the caller falls back to the posts' centroid).
 Future<LatLng?> countryCenter(String countryCode) async {
   final cached = _countryCenterCache[countryCode];
   if (cached != null) return cached;
-  try {
-    // The query text is a 2-letter code, which Mapbox matches against country
-    // NAMES too -- "no" hits "North Korea", "is" hits "Israel". The country=
-    // filter restricts results to the intended country, and we double-check the
-    // returned short_code so a mismatch falls back rather than misplacing a flag.
-    final uri = Uri.parse(
-      'https://api.mapbox.com/geocoding/v5/mapbox.places/'
-      '$countryCode.json?types=country&country=$countryCode&limit=1'
-      '&access_token=${AppConfig.mapboxPublicToken}',
-    );
-    final res = await http.get(uri);
-    if (res.statusCode != 200) return null;
-    final data = jsonDecode(res.body) as Map<String, dynamic>;
-    final features = data['features'] as List<dynamic>;
-    if (features.isEmpty) return null;
-    final feature = features.first as Map<String, dynamic>;
-    final shortCode = (feature['properties'] as Map?)?['short_code'] as String?;
-    if (shortCode != null &&
-        shortCode.toLowerCase() != countryCode.toLowerCase()) {
-      return null;
-    }
-    final center = feature['center'] as List;
-    final ll = LatLng(
-      (center[1] as num).toDouble(),
-      (center[0] as num).toDouble(),
-    );
-    _countryCenterCache[countryCode] = ll;
-    return ll;
-  } catch (_) {
-    return null;
-  }
+  // The query text is a 2-letter code, which Mapbox matches against country
+  // NAMES too -- "no" hits "North Korea", "is" hits "Israel". The country=
+  // filter restricts results to the intended country, and we double-check the
+  // returned short_code so a mismatch falls back rather than misplacing a flag.
+  final center = await _geocode<LatLng?>(
+    countryCode,
+    {'types': 'country', 'country': countryCode, 'limit': '1'},
+    fallback: null,
+    parse: (f) {
+      if (f.isEmpty) return null;
+      final shortCode =
+          (f.first['properties'] as Map?)?['short_code'] as String?;
+      if (shortCode != null &&
+          shortCode.toLowerCase() != countryCode.toLowerCase()) {
+        return null;
+      }
+      return _centerOf(f.first);
+    },
+  );
+  if (center != null) _countryCenterCache[countryCode] = center;
+  return center;
 }
 
 /// Reverse-geocodes a location to an ISO 3166-1 alpha-2 country code (lowercase,
-/// matching the bundled flag asset filenames) via Mapbox. Best-effort: returns
-/// null on any failure so posting still works (the post just has no flag).
-Future<String?> reverseCountryCode(LatLng loc) async {
-  try {
-    final uri = Uri.parse(
-      'https://api.mapbox.com/geocoding/v5/mapbox.places/'
-      '${loc.longitude},${loc.latitude}.json'
-      '?types=country&limit=1&access_token=${AppConfig.mapboxPublicToken}',
-    );
-    final res = await http.get(uri);
-    if (res.statusCode != 200) return null;
-    final data = jsonDecode(res.body) as Map<String, dynamic>;
-    final features = data['features'] as List<dynamic>;
-    if (features.isEmpty) return null;
-    final props =
-        (features.first as Map<String, dynamic>)['properties'] as Map?;
-    final code = props?['short_code'] as String?;
-    return code?.toLowerCase();
-  } catch (_) {
-    return null;
-  }
-}
+/// matching the bundled flag asset filenames). Null on failure, so posting
+/// still works (the post just has no flag).
+Future<String?> reverseCountryCode(LatLng loc) => _geocode(
+  _at(loc),
+  {'types': 'country', 'limit': '1'},
+  fallback: null,
+  parse: (f) => f.isEmpty
+      ? null
+      : ((f.first['properties'] as Map?)?['short_code'] as String?)
+            ?.toLowerCase(),
+);

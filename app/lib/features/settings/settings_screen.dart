@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/error_dialog.dart';
 import '../../core/locale_controller.dart';
 import '../../core/theme_controller.dart';
+import '../../core/user_avatar.dart';
 import '../../core/validators.dart';
 import '../../data/profile_repository.dart';
 import '../../l10n/app_localizations.dart';
@@ -54,22 +55,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   /// The display label for the current language selection: an explicit choice,
   /// or "System default" when following the device locale.
-  String _languageLabel(AppLocalizations l) {
-    switch (LocaleController.instance.value?.languageCode) {
-      case 'ko':
-        return '한국어';
-      case 'en':
-        return 'English';
-      case 'ja':
-        return '日本語';
-      case 'zh':
-        return '中文';
-      case 'es':
-        return 'Español';
-      default:
-        return l.settingsLanguageSystem;
-    }
-  }
+  String _languageLabel(AppLocalizations l) =>
+      _languageNames[LocaleController.instance.value?.languageCode] ??
+      l.settingsLanguageSystem;
 
   /// The display label for the current light/dark selection.
   String _themeLabel(AppLocalizations l) {
@@ -326,12 +314,59 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// App language picker.
   Future<void> _openLanguageSheet() async {
     final l = AppLocalizations.of(context);
+    // '' stands for "follow the device language", so it stays distinct from a
+    // dismissal (null).
+    final picked = await _pickOption<String>(
+      title: l.settingsAppLanguage,
+      options: [
+        ('', l.settingsLanguageSystem),
+        for (final e in _languageNames.entries) (e.key, e.value),
+      ],
+      selected: LocaleController.instance.value?.languageCode ?? '',
+      footer: Padding(
+        padding: const EdgeInsets.fromLTRB(18, 12, 18, 16),
+        child: Text(
+          l.settingsLanguageNote,
+          style: TextStyle(fontSize: 13, color: context.c.inkFaint),
+        ),
+      ),
+    );
+    if (picked == null || !mounted) return;
+    await LocaleController.instance.setLocale(
+      picked.isEmpty ? null : Locale(picked),
+    );
+    if (mounted) setState(() {});
+  }
+
+  /// Light/dark appearance picker.
+  Future<void> _openThemeSheet() async {
+    final l = AppLocalizations.of(context);
+    final picked = await _pickOption<ThemeMode>(
+      title: l.settingsAppearance,
+      options: [
+        (ThemeMode.system, l.settingsThemeSystem),
+        (ThemeMode.light, l.settingsThemeLight),
+        (ThemeMode.dark, l.settingsThemeDark),
+      ],
+      selected: ThemeController.instance.value,
+      footer: const SizedBox(height: 12),
+    );
+    if (picked == null || !mounted) return;
+    await ThemeController.instance.setMode(picked);
+    if (mounted) setState(() {});
+  }
+
+  /// A single-choice bottom sheet: [title], one row per option (a check on
+  /// [selected]), then [footer]. Resolves to the picked value, or null if
+  /// dismissed.
+  Future<T?> _pickOption<T>({
+    required String title,
+    required List<(T, String)> options,
+    required T selected,
+    required Widget footer,
+  }) {
     final c = context.c;
-    final current = LocaleController.instance.value?.languageCode;
-    // The sheet returns null on dismissal, a Locale for an explicit language,
-    // or the [_systemDefault] sentinel for "follow the device locale" — so a
-    // tap-outside (null) is not confused with choosing System default.
-    final picked = await showModalBottomSheet<Object>(
+    return showModalBottomSheet<T>(
       context: context,
       backgroundColor: Colors.transparent,
       barrierColor: c.scrim,
@@ -348,7 +383,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      l.settingsAppLanguage,
+                      title,
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
@@ -357,119 +392,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                 ),
-                _LanguageOption(
-                  label: l.settingsLanguageSystem,
-                  selected: current == null,
-                  onTap: () => Navigator.pop(ctx, _systemDefault),
-                ),
-                const _LanguageDivider(),
-                // Language names are shown as endonyms (each in its own script),
-                // a localization convention, so they are not translated.
-                _LanguageOption(
-                  label: 'English',
-                  selected: current == 'en',
-                  onTap: () => Navigator.pop(ctx, const Locale('en')),
-                ),
-                const _LanguageDivider(),
-                _LanguageOption(
-                  label: '한국어',
-                  selected: current == 'ko',
-                  onTap: () => Navigator.pop(ctx, const Locale('ko')),
-                ),
-                const _LanguageDivider(),
-                _LanguageOption(
-                  label: '日本語',
-                  selected: current == 'ja',
-                  onTap: () => Navigator.pop(ctx, const Locale('ja')),
-                ),
-                const _LanguageDivider(),
-                _LanguageOption(
-                  label: '中文',
-                  selected: current == 'zh',
-                  onTap: () => Navigator.pop(ctx, const Locale('zh')),
-                ),
-                const _LanguageDivider(),
-                _LanguageOption(
-                  label: 'Español',
-                  selected: current == 'es',
-                  onTap: () => Navigator.pop(ctx, const Locale('es')),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(18, 12, 18, 16),
-                  child: Text(
-                    l.settingsLanguageNote,
-                    style: TextStyle(fontSize: 13, color: c.inkFaint),
+                for (final (i, (value, label)) in options.indexed) ...[
+                  if (i > 0) const _OptionDivider(),
+                  _OptionRow(
+                    label: label,
+                    selected: value == selected,
+                    onTap: () => Navigator.pop(ctx, value),
                   ),
-                ),
+                ],
+                footer,
               ],
             ),
           ),
         ),
       ),
     );
-    if (picked == null || !mounted) return; // dismissed without choosing
-    final locale = picked is Locale ? picked : null; // _systemDefault -> null
-    await LocaleController.instance.setLocale(locale);
-    if (mounted) setState(() {});
-  }
-
-  /// Light/dark appearance picker.
-  Future<void> _openThemeSheet() async {
-    final l = AppLocalizations.of(context);
-    final c = context.c;
-    final current = ThemeController.instance.value;
-    final picked = await showModalBottomSheet<ThemeMode>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      barrierColor: c.scrim,
-      builder: (ctx) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-          child: _FloatingCard(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(18, 16, 18, 8),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      l.settingsAppearance,
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
-                        color: c.ink,
-                      ),
-                    ),
-                  ),
-                ),
-                _LanguageOption(
-                  label: l.settingsThemeSystem,
-                  selected: current == ThemeMode.system,
-                  onTap: () => Navigator.pop(ctx, ThemeMode.system),
-                ),
-                const _LanguageDivider(),
-                _LanguageOption(
-                  label: l.settingsThemeLight,
-                  selected: current == ThemeMode.light,
-                  onTap: () => Navigator.pop(ctx, ThemeMode.light),
-                ),
-                const _LanguageDivider(),
-                _LanguageOption(
-                  label: l.settingsThemeDark,
-                  selected: current == ThemeMode.dark,
-                  onTap: () => Navigator.pop(ctx, ThemeMode.dark),
-                ),
-                const SizedBox(height: 12),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-    if (picked == null || !mounted) return;
-    await ThemeController.instance.setMode(picked);
-    if (mounted) setState(() {});
   }
 
   /// Photo-visibility info (locked mode): explains the fixed "friends only"
@@ -545,8 +482,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const SizedBox(height: 18),
                   SizedBox(
                     width: double.infinity,
-                    child: _PrimaryButton(
+                    child: _SolidButton(
                       label: l.commonGotIt,
+                      background: c.primary,
+                      foreground: c.onPrimary,
                       onTap: () => Navigator.pop(ctx),
                     ),
                   ),
@@ -609,7 +548,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: _DialogButton(
+                      child: _SolidButton(
                         label: l.commonCancel,
                         background: c.fill,
                         foreground: c.ink,
@@ -618,7 +557,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: _DialogButton(
+                      child: _SolidButton(
                         label: l.commonDelete,
                         background: c.danger,
                         foreground: Colors.white,
@@ -1009,7 +948,6 @@ class _ProfileHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    final initial = displayName.isNotEmpty ? displayName[0].toUpperCase() : '?';
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -1027,20 +965,11 @@ class _ProfileHero extends StatelessWidget {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  CircleAvatar(
+                  UserAvatar(
+                    name: displayName,
+                    url: avatarUrl,
                     radius: 32,
-                    backgroundColor: c.primary.withValues(alpha: 0.24),
-                    foregroundImage: avatarUrl != null
-                        ? NetworkImage(avatarUrl!)
-                        : null,
-                    child: Text(
-                      initial,
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w700,
-                        color: c.ink,
-                      ),
-                    ),
+                    fontSize: 28,
                   ),
                   Positioned(
                     right: -2,
@@ -1367,13 +1296,19 @@ class _SheetAction extends StatelessWidget {
   }
 }
 
-/// Sentinel result from the language sheet meaning "follow the device locale",
-/// kept distinct from null (sheet dismissed without choosing).
-const Object _systemDefault = Object();
+/// App languages, shown as endonyms (each in its own script) — a localization
+/// convention, so they are not translated.
+const _languageNames = {
+  'en': 'English',
+  'ko': '한국어',
+  'ja': '日本語',
+  'zh': '中文',
+  'es': 'Español',
+};
 
 /// Inset hairline between options.
-class _LanguageDivider extends StatelessWidget {
-  const _LanguageDivider();
+class _OptionDivider extends StatelessWidget {
+  const _OptionDivider();
 
   @override
   Widget build(BuildContext context) {
@@ -1388,8 +1323,8 @@ class _LanguageDivider extends StatelessWidget {
 }
 
 /// One option row with a trailing check when selected (language or theme).
-class _LanguageOption extends StatelessWidget {
-  const _LanguageOption({
+class _OptionRow extends StatelessWidget {
+  const _OptionRow({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -1426,42 +1361,9 @@ class _LanguageOption extends StatelessWidget {
   }
 }
 
-/// Filled primary (sky-blue) button used inside sheets.
-class _PrimaryButton extends StatelessWidget {
-  const _PrimaryButton({required this.label, required this.onTap});
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.c;
-    return Material(
-      color: c.primary,
-      borderRadius: BorderRadius.circular(14),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 13),
-          child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: c.onPrimary,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// A dialog action button (Cancel / Delete).
-class _DialogButton extends StatelessWidget {
-  const _DialogButton({
+/// A filled, rounded button for sheets and dialogs (Got it / Cancel / Delete).
+class _SolidButton extends StatelessWidget {
+  const _SolidButton({
     required this.label,
     required this.background,
     required this.foreground,

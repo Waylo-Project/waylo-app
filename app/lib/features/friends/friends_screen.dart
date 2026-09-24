@@ -3,7 +3,9 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
+import '../../core/date_format.dart';
 import '../../core/error_dialog.dart';
+import '../../core/user_avatar.dart';
 import '../../data/feed_repository.dart';
 import '../../data/friends_repository.dart';
 import '../../data/geocoding.dart';
@@ -229,9 +231,7 @@ class _FriendsViewState extends State<FriendsView> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(
-              foregroundColor: const Color(0xFFD64545),
-            ),
+            style: TextButton.styleFrom(foregroundColor: context.c.danger),
             child: Text(l.friendsRemove),
           ),
         ],
@@ -445,7 +445,7 @@ class _RequestCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              _Avatar(user: r.from),
+              _ListAvatar(user: r.from),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -791,7 +791,7 @@ class _Row extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  _Avatar(user: user),
+                  _ListAvatar(user: user),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -832,31 +832,18 @@ class _Row extends StatelessWidget {
   }
 }
 
-class _Avatar extends StatelessWidget {
-  const _Avatar({required this.user});
+/// The 44px avatar used by friend rows and request cards.
+class _ListAvatar extends StatelessWidget {
+  const _ListAvatar({required this.user});
   final UserSummary user;
 
   @override
-  Widget build(BuildContext context) {
-    final initial = user.username.isNotEmpty
-        ? user.username[0].toUpperCase()
-        : '?';
-    return CircleAvatar(
-      radius: 22,
-      backgroundColor: context.c.primary.withValues(alpha: 0.22),
-      foregroundImage: user.avatarUrl != null
-          ? NetworkImage(user.avatarUrl!)
-          : null,
-      child: Text(
-        initial,
-        style: TextStyle(
-          fontSize: 17,
-          fontWeight: FontWeight.w700,
-          color: context.c.ink,
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => UserAvatar(
+    name: user.username,
+    url: user.avatarUrl,
+    radius: 22,
+    fontSize: 17,
+  );
 }
 
 /// The passport strip: up to three country flags, then a count summary.
@@ -939,7 +926,7 @@ class _RemoveBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFFD64545),
+      color: context.c.danger,
       alignment: Alignment.centerRight,
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
@@ -1403,7 +1390,7 @@ class _JustInCardState extends State<_JustInCard> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
-                          _agoShort(
+                          formatAgo(
                             AppLocalizations.of(context),
                             widget.point.createdAt,
                           ),
@@ -1428,9 +1415,11 @@ class _JustInCardState extends State<_JustInCard> {
                 children: [
                   Row(
                     children: [
-                      _MiniInitial(
+                      UserAvatar(
                         name: widget.point.username,
-                        avatarUrl: widget.point.avatarUrl,
+                        url: widget.point.avatarUrl,
+                        radius: 11,
+                        fontSize: 12,
                       ),
                       const SizedBox(width: 7),
                       Expanded(
@@ -1462,38 +1451,4 @@ class _JustInCardState extends State<_JustInCard> {
       ),
     );
   }
-}
-
-/// Small avatar for the "Just in" card footer: the author's profile photo when
-/// they have one, falling back to a tinted initial.
-class _MiniInitial extends StatelessWidget {
-  const _MiniInitial({required this.name, this.avatarUrl});
-  final String name;
-  final String? avatarUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
-    return CircleAvatar(
-      radius: 11,
-      backgroundColor: context.c.primary.withValues(alpha: 0.25),
-      foregroundImage: avatarUrl != null ? NetworkImage(avatarUrl!) : null,
-      child: Text(
-        initial,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-          color: context.c.ink,
-        ),
-      ),
-    );
-  }
-}
-
-String _agoShort(AppLocalizations l, DateTime t) {
-  final d = DateTime.now().difference(t);
-  if (d.inMinutes < 1) return l.timeNow;
-  if (d.inMinutes < 60) return l.timeMinutesShort(d.inMinutes);
-  if (d.inHours < 24) return l.timeHoursShort(d.inHours);
-  return l.timeDaysShort(d.inDays);
 }
