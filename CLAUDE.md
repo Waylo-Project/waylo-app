@@ -106,7 +106,8 @@ waylo2/
 ```
 
 Code map (`app/lib/`):
-- `config/app_config.dart` — Supabase + Mapbox public keys.
+- `config/app_config.dart` — Supabase URL + client keys (the keys come from
+  the gitignored `app_keys.dart`; template `app_keys.example.dart`).
 - `core/` — app-wide pieces: `lat_lng` (provider-agnostic coordinate),
   `locale_controller` / `theme_controller` (persisted language + light/dark),
   `push_messaging` (FCM token + drawing notifications), `user_avatar`,
